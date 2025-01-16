@@ -109,6 +109,11 @@ let make = () => {
           </div>
         </form>
       </section>
+      <section className="flex flex-col gap-2 justify-center">
+        <button> {Preact.string("Insert Swatch Before")} </button>
+        <button> {Preact.string("Insert Swatch After")} </button>
+        <button> {Preact.string("Delete Swatch")} </button>
+      </section>
     </aside>
   </div>
 }

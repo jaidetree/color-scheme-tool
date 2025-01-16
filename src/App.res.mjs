@@ -254,6 +254,20 @@ function App(props) {
                                     ],
                                     className: "p-4 flex flex-col gap-2"
                                   })
+                            }),
+                        JsxRuntime.jsxs("section", {
+                              children: [
+                                JsxRuntime.jsx("button", {
+                                      children: "Insert Swatch Before"
+                                    }),
+                                JsxRuntime.jsx("button", {
+                                      children: "Insert Swatch After"
+                                    }),
+                                JsxRuntime.jsx("button", {
+                                      children: "Delete Swatch"
+                                    })
+                              ],
+                              className: "flex flex-col gap-2 justify-center"
                             })
                       ],
                       className: "sidebar flex bg-gray-950 w-80 flex flex-col gap-4"
