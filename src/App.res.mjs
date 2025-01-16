@@ -79,21 +79,184 @@ function App(props) {
                       ],
                       className: "flex flex-col flex-grow"
                     }),
-                JsxRuntime.jsx("aside", {
-                      children: JsxRuntime.jsxs("nav", {
-                            children: [
-                              JsxRuntime.jsx("button", {
-                                    children: "inspector",
-                                    value: "properties"
-                                  }),
-                              JsxRuntime.jsx("button", {
-                                    children: "palettes",
-                                    value: "palettes"
+                JsxRuntime.jsxs("aside", {
+                      children: [
+                        JsxRuntime.jsxs("nav", {
+                              children: [
+                                JsxRuntime.jsx("button", {
+                                      children: "inspector",
+                                      value: "properties"
+                                    }),
+                                JsxRuntime.jsx("button", {
+                                      children: "palettes",
+                                      value: "palettes"
+                                    })
+                              ],
+                              className: "p-4 flex flex-row items-start gap-2"
+                            }),
+                        JsxRuntime.jsx("section", {
+                              children: JsxRuntime.jsxs("form", {
+                                    children: [
+                                      JsxRuntime.jsxs("div", {
+                                            children: [
+                                              JsxRuntime.jsx("label", {
+                                                    children: "Red",
+                                                    className: "w-20",
+                                                    htmlFor: "id_props_red"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-10 bg-gray-800 text-right px-2",
+                                                    id: "id_props_red",
+                                                    type: "text",
+                                                    value: "50"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-full",
+                                                    max: "255",
+                                                    min: "0",
+                                                    type: "range",
+                                                    value: "50"
+                                                  })
+                                            ],
+                                            className: "flex flex-row gap-2"
+                                          }),
+                                      JsxRuntime.jsxs("div", {
+                                            children: [
+                                              JsxRuntime.jsx("label", {
+                                                    children: "Green",
+                                                    className: "w-20",
+                                                    htmlFor: "id_props_green"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-10 bg-gray-800 text-right px-2",
+                                                    id: "id_props_green",
+                                                    type: "text",
+                                                    value: "50"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-full",
+                                                    max: "255",
+                                                    min: "0",
+                                                    type: "range",
+                                                    value: "50"
+                                                  })
+                                            ],
+                                            className: "flex flex-row gap-2"
+                                          }),
+                                      JsxRuntime.jsxs("div", {
+                                            children: [
+                                              JsxRuntime.jsx("label", {
+                                                    children: "Blue",
+                                                    className: "w-20",
+                                                    htmlFor: "id_props_blue"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-10 bg-gray-800 text-right px-2",
+                                                    id: "id_props_blue",
+                                                    type: "text",
+                                                    value: "50"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-full",
+                                                    max: "255",
+                                                    min: "0",
+                                                    type: "range",
+                                                    value: "50"
+                                                  })
+                                            ],
+                                            className: "flex flex-row gap-2 mb-4"
+                                          }),
+                                      JsxRuntime.jsxs("div", {
+                                            children: [
+                                              JsxRuntime.jsx("label", {
+                                                    children: "Hue",
+                                                    className: "w-20",
+                                                    htmlFor: "id_props_hue"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-10 bg-gray-800 text-right px-2",
+                                                    id: "id_props_hue",
+                                                    type: "text",
+                                                    value: "50"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-full",
+                                                    max: "360",
+                                                    min: "0",
+                                                    type: "range",
+                                                    value: "50"
+                                                  })
+                                            ],
+                                            className: "flex flex-row gap-2"
+                                          }),
+                                      JsxRuntime.jsxs("div", {
+                                            children: [
+                                              JsxRuntime.jsx("label", {
+                                                    children: "Sat",
+                                                    className: "w-20",
+                                                    htmlFor: "id_props_saturation"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-10 bg-gray-800 text-right px-2",
+                                                    id: "id_props_saturation",
+                                                    type: "text",
+                                                    value: "50"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-full",
+                                                    max: "100",
+                                                    min: "0",
+                                                    type: "range",
+                                                    value: "50"
+                                                  })
+                                            ],
+                                            className: "flex flex-row gap-2"
+                                          }),
+                                      JsxRuntime.jsxs("div", {
+                                            children: [
+                                              JsxRuntime.jsx("label", {
+                                                    children: "Light",
+                                                    className: "w-20",
+                                                    htmlFor: "id_props_brightness"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-10 bg-gray-800 text-right px-2",
+                                                    id: "id_props_brightness",
+                                                    type: "text",
+                                                    value: "50"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-full",
+                                                    max: "100",
+                                                    min: "0",
+                                                    type: "range",
+                                                    value: "50"
+                                                  })
+                                            ],
+                                            className: "flex flex-row gap-2 mb-4"
+                                          }),
+                                      JsxRuntime.jsxs("div", {
+                                            children: [
+                                              JsxRuntime.jsx("label", {
+                                                    children: "Hex",
+                                                    className: "w-20",
+                                                    htmlFor: "id_props_hex"
+                                                  }),
+                                              JsxRuntime.jsx("input", {
+                                                    className: "w-16 bg-gray-800 px-2",
+                                                    id: "id_props_hex",
+                                                    type: "text",
+                                                    value: "#ffffff"
+                                                  })
+                                            ],
+                                            className: "flex flex-row justify-between gap-2 mb-4"
+                                          })
+                                    ],
+                                    className: "p-4 flex flex-col gap-2"
                                   })
-                            ],
-                            className: "p-4 flex flex-row items-start gap-2"
-                          }),
-                      className: "sidebar flex bg-gray-950 w-80"
+                            })
+                      ],
+                      className: "sidebar flex bg-gray-950 w-80 flex flex-col gap-4"
                     })
               ],
               className: "bg-gray-900 min-h-screen text-white flex flex-row items-stretch"
