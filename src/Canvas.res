@@ -1,5 +1,56 @@
 type canvas = Dom.element
-type canvasContext
+
+module Gradient = {
+  type t
+
+  @send
+  external addColorStop: (t, ~offset: float, ~color: string) => unit = "addColorStop"
+}
+
+module Context = {
+  type t
+
+  @send
+  external arc: (
+    t,
+    ~x: int,
+    ~y: int,
+    ~radius: int,
+    ~startAngle: float,
+    ~endAngle: float,
+    ~counterClockwise: bool=?,
+  ) => unit = "arc"
+
+  @send
+  external createConicGradient: (t, ~startAngle: int, ~x: int, ~y: int) => Gradient.t =
+    "createConicGradient"
+
+  @send
+  external createRadialGradient: (
+    t,
+    ~x0: int,
+    ~y0: int,
+    ~r0: int,
+    ~x1: int,
+    ~y1: int,
+    ~r1: int,
+  ) => Gradient.t = "createRadialGradient"
+
+  @send
+  external beginPath: t => unit = "beginPath"
+
+  @send
+  external closePath: t => unit = "closePath"
+
+  @send
+  external fill: (t, ~fillRule: [#nonzero | #evenodd]=?) => unit = "fill"
+
+  @get
+  external getFillStyle: t => string = "fillStyle"
+
+  @set
+  external setFillStyle: (t, @unwrap [#color(string) | #gradient(Gradient.t)]) => unit = "fillStyle"
+}
 
 @send
 external getContext: (
@@ -12,61 +63,4 @@ external getContext: (
     | #webgpu
     | #bitmaprenderer
   ],
-) => canvasContext = "getContext"
-
-module Gradient = {
-  type canvasGradient
-
-  @send
-  external addColorStop: (canvasGradient, ~offset: float, ~color: string) => unit = "addColorStop"
-}
-
-module Context = {
-  @send
-  external arc: (
-    canvasContext,
-    ~x: int,
-    ~y: int,
-    ~radius: int,
-    ~startAngle: float,
-    ~endAngle: float,
-    ~counterClockwise: bool=?,
-  ) => unit = "arc"
-
-  @send
-  external createConicGradient: (
-    canvasContext,
-    ~startAngle: int,
-    ~x: int,
-    ~y: int,
-  ) => Gradient.canvasGradient = "createConicGradient"
-
-  @send
-  external createRadialGradient: (
-    canvasContext,
-    ~x0: int,
-    ~y0: int,
-    ~r0: int,
-    ~x1: int,
-    ~y1: int,
-    ~r1: int,
-  ) => Gradient.canvasGradient = "createRadialGradient"
-
-  @send
-  external beginPath: canvasContext => unit = "beginPath"
-
-  @send
-  external closePath: canvasContext => unit = "closePath"
-
-  @send
-  external fill: (canvasContext, ~fillRule: [#nonzero | #evenodd]=?) => unit = "fill"
-
-  @get
-  external getFillStyle: canvasContext => string = "fillStyle"
-
-  @set
-  external setFillStyle: (
-    canvasContext,
-    @unwrap [#color(string) | #gradient(Gradient.canvasGradient)],
-  ) => unit = "fillStyle"
-}
+) => Context.t = "getContext"

@@ -2,7 +2,7 @@ open Preact
 
 let colors = ["red", "orange", "yellow", "green", "cyan", "blue", "magenta", "red"]
 
-let circle = (ctx: Canvas.canvasContext, fill: Canvas.Gradient.canvasGradient) => {
+let circle = (ctx: Canvas.Context.t, fill: Canvas.Gradient.t) => {
   ctx->Canvas.Context.beginPath
   ctx->Canvas.Context.arc(
     ~x=300,
