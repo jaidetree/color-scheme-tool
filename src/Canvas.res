@@ -22,8 +22,6 @@ module Gradient = {
 }
 
 module Context = {
-  type fillStyle = [#color(string) | #gradient(Gradient.canvasGradient)]
-
   @send
   external arc: (
     canvasContext,
@@ -64,8 +62,11 @@ module Context = {
   external fill: (canvasContext, ~fillRule: [#nonzero | #evenodd]=?) => unit = "fill"
 
   @get
-  external getFillStyle: canvasContext => fillStyle = "fillStyle"
+  external getFillStyle: canvasContext => string = "fillStyle"
 
   @set
-  external setFillStyle: (canvasContext, fillStyle) => unit = "fillStyle"
+  external setFillStyle: (
+    canvasContext,
+    @unwrap [#color(string) | #gradient(Gradient.canvasGradient)],
+  ) => unit = "fillStyle"
 }

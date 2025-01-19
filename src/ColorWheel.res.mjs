@@ -15,28 +15,32 @@ var colors = [
   "red"
 ];
 
+function circle(ctx, fill) {
+  ctx.beginPath();
+  ctx.arc(300, 300, 300, 0.0, 2.0 * Math.PI);
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.closePath();
+}
+
 function ColorWheel(props) {
   var canvasRef = Hooks.useRef(null);
   var logRef = function (param) {
     var canvas = canvasRef.current;
     if (!(canvas === null || canvas === undefined)) {
       var ctx = canvas.getContext("2d");
-      var gradient = ctx.createConicGradient(0, 300, 300);
+      var conicGradient = ctx.createConicGradient(0, 300, 300);
       var totalColors = colors.length;
-      var interval = 1.0 / totalColors;
+      var interval = 1.0 / (totalColors - 1 | 0);
       colors.forEach(function (color, index) {
             var offset = index * interval;
-            gradient.addColorStop(offset, color);
+            conicGradient.addColorStop(offset, color);
           });
-      ctx.beginPath();
-      ctx.arc(300, 300, 300, 0.0, 2.0 * Math.PI);
-      ctx.closePath();
-      ctx.fillStyle = {
-        NAME: "gradient",
-        VAL: gradient
-      };
-      ctx.fill();
-      return ;
+      circle(ctx, conicGradient);
+      var radialGradient = ctx.createRadialGradient(300, 300, 5, 300, 300, 300);
+      radialGradient.addColorStop(0.0, "white");
+      radialGradient.addColorStop(1.0, "rgba(255, 255, 255, 0");
+      return circle(ctx, radialGradient);
     }
     if (canvas === null) {
       console.log("canvas is not set yet");
