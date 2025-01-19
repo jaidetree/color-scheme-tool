@@ -61,8 +61,22 @@ module Elements = {
   external someElement: element => option<element> = "%identity"
 }
 
+type ref<'value> = {mutable current: 'value}
+
 // @module("preact/hooks")
 // external render: (element, Dom.element) => unit = "render"
+
+type domRef = JsxDOM.domRef
+
+module Ref = {
+  type t = domRef
+
+  type currentDomRef = ref<Js.nullable<Dom.element>>
+  type callbackDomRef = Js.nullable<Dom.element> => unit
+
+  external domRef: currentDomRef => domRef = "%identity"
+  external callbackDomRef: callbackDomRef => domRef = "%identity"
+}
 
 /* HOOKS */
 
@@ -73,7 +87,7 @@ module Elements = {
  * only way to safely have any type of state and be able to update it correctly.
  */
 @module("preact/hooks")
-external useState: (@uncurry (unit => 'state)) => ('state, ('state => 'state) => unit) = "useState"
+external useState: (@uncurry unit => 'state) => ('state, ('state => 'state) => unit) = "useState"
 
 @module("preact/hooks")
 external useReducer: (@uncurry ('state, 'action) => 'state, 'state) => ('state, 'action => unit) =
@@ -83,98 +97,93 @@ external useReducer: (@uncurry ('state, 'action) => 'state, 'state) => ('state, 
 external useReducerWithMapState: (
   @uncurry ('state, 'action) => 'state,
   'initialState,
-  @uncurry ('initialState => 'state),
+  @uncurry 'initialState => 'state,
 ) => ('state, 'action => unit) = "useReducer"
 
 @module("preact/hooks")
-external useEffectOnEveryRender: (@uncurry (unit => option<unit => unit>)) => unit = "useEffect"
+external useEffectOnEveryRender: (@uncurry unit => option<unit => unit>) => unit = "useEffect"
 @module("preact/hooks")
-external useEffect: (@uncurry (unit => option<unit => unit>), 'deps) => unit = "useEffect"
+external useEffect: (@uncurry unit => option<unit => unit>, 'deps) => unit = "useEffect"
 @module("preact/hooks")
-external useEffect0: (@uncurry (unit => option<unit => unit>), @as(json`[]`) _) => unit =
+external useEffect0: (@uncurry unit => option<unit => unit>, @as(json`[]`) _) => unit = "useEffect"
+@module("preact/hooks")
+external useEffect1: (@uncurry unit => option<unit => unit>, array<'a>) => unit = "useEffect"
+@module("preact/hooks")
+external useEffect2: (@uncurry unit => option<unit => unit>, ('a, 'b)) => unit = "useEffect"
+@module("preact/hooks")
+external useEffect3: (@uncurry unit => option<unit => unit>, ('a, 'b, 'c)) => unit = "useEffect"
+@module("preact/hooks")
+external useEffect4: (@uncurry unit => option<unit => unit>, ('a, 'b, 'c, 'd)) => unit = "useEffect"
+@module("preact/hooks")
+external useEffect5: (@uncurry unit => option<unit => unit>, ('a, 'b, 'c, 'd, 'e)) => unit =
   "useEffect"
 @module("preact/hooks")
-external useEffect1: (@uncurry (unit => option<unit => unit>), array<'a>) => unit = "useEffect"
-@module("preact/hooks")
-external useEffect2: (@uncurry (unit => option<unit => unit>), ('a, 'b)) => unit = "useEffect"
-@module("preact/hooks")
-external useEffect3: (@uncurry (unit => option<unit => unit>), ('a, 'b, 'c)) => unit = "useEffect"
-@module("preact/hooks")
-external useEffect4: (@uncurry (unit => option<unit => unit>), ('a, 'b, 'c, 'd)) => unit =
+external useEffect6: (@uncurry unit => option<unit => unit>, ('a, 'b, 'c, 'd, 'e, 'f)) => unit =
   "useEffect"
 @module("preact/hooks")
-external useEffect5: (@uncurry (unit => option<unit => unit>), ('a, 'b, 'c, 'd, 'e)) => unit =
+external useEffect7: (@uncurry unit => option<unit => unit>, ('a, 'b, 'c, 'd, 'e, 'f, 'g)) => unit =
   "useEffect"
-@module("preact/hooks")
-external useEffect6: (@uncurry (unit => option<unit => unit>), ('a, 'b, 'c, 'd, 'e, 'f)) => unit =
-  "useEffect"
-@module("preact/hooks")
-external useEffect7: (
-  @uncurry (unit => option<unit => unit>),
-  ('a, 'b, 'c, 'd, 'e, 'f, 'g),
-) => unit = "useEffect"
 
 @module("preact/hooks")
-external useLayoutEffectOnEveryRender: (@uncurry (unit => option<unit => unit>)) => unit =
+external useLayoutEffectOnEveryRender: (@uncurry unit => option<unit => unit>) => unit =
   "useLayoutEffect"
 @module("preact/hooks")
-external useLayoutEffect: (@uncurry (unit => option<unit => unit>), 'deps) => unit =
+external useLayoutEffect: (@uncurry unit => option<unit => unit>, 'deps) => unit = "useLayoutEffect"
+@module("preact/hooks")
+external useLayoutEffect0: (@uncurry unit => option<unit => unit>, @as(json`[]`) _) => unit =
   "useLayoutEffect"
 @module("preact/hooks")
-external useLayoutEffect0: (@uncurry (unit => option<unit => unit>), @as(json`[]`) _) => unit =
+external useLayoutEffect1: (@uncurry unit => option<unit => unit>, array<'a>) => unit =
   "useLayoutEffect"
 @module("preact/hooks")
-external useLayoutEffect1: (@uncurry (unit => option<unit => unit>), array<'a>) => unit =
+external useLayoutEffect2: (@uncurry unit => option<unit => unit>, ('a, 'b)) => unit =
   "useLayoutEffect"
 @module("preact/hooks")
-external useLayoutEffect2: (@uncurry (unit => option<unit => unit>), ('a, 'b)) => unit =
+external useLayoutEffect3: (@uncurry unit => option<unit => unit>, ('a, 'b, 'c)) => unit =
   "useLayoutEffect"
 @module("preact/hooks")
-external useLayoutEffect3: (@uncurry (unit => option<unit => unit>), ('a, 'b, 'c)) => unit =
+external useLayoutEffect4: (@uncurry unit => option<unit => unit>, ('a, 'b, 'c, 'd)) => unit =
   "useLayoutEffect"
 @module("preact/hooks")
-external useLayoutEffect4: (@uncurry (unit => option<unit => unit>), ('a, 'b, 'c, 'd)) => unit =
-  "useLayoutEffect"
-@module("preact/hooks")
-external useLayoutEffect5: (@uncurry (unit => option<unit => unit>), ('a, 'b, 'c, 'd, 'e)) => unit =
+external useLayoutEffect5: (@uncurry unit => option<unit => unit>, ('a, 'b, 'c, 'd, 'e)) => unit =
   "useLayoutEffect"
 @module("preact/hooks")
 external useLayoutEffect6: (
-  @uncurry (unit => option<unit => unit>),
+  @uncurry unit => option<unit => unit>,
   ('a, 'b, 'c, 'd, 'e, 'f),
 ) => unit = "useLayoutEffect"
 @module("preact/hooks")
 external useLayoutEffect7: (
-  @uncurry (unit => option<unit => unit>),
+  @uncurry unit => option<unit => unit>,
   ('a, 'b, 'c, 'd, 'e, 'f, 'g),
 ) => unit = "useLayoutEffect"
 
 @module("preact/hooks")
-external useMemo: (@uncurry (unit => 'any), 'deps) => 'any = "useMemo"
+external useMemo: (@uncurry unit => 'any, 'deps) => 'any = "useMemo"
 
 @module("preact/hooks")
-external useMemo0: (@uncurry (unit => 'any), @as(json`[]`) _) => 'any = "useMemo"
+external useMemo0: (@uncurry unit => 'any, @as(json`[]`) _) => 'any = "useMemo"
 
 @module("preact/hooks")
-external useMemo1: (@uncurry (unit => 'any), array<'a>) => 'any = "useMemo"
+external useMemo1: (@uncurry unit => 'any, array<'a>) => 'any = "useMemo"
 
 @module("preact/hooks")
-external useMemo2: (@uncurry (unit => 'any), ('a, 'b)) => 'any = "useMemo"
+external useMemo2: (@uncurry unit => 'any, ('a, 'b)) => 'any = "useMemo"
 
 @module("preact/hooks")
-external useMemo3: (@uncurry (unit => 'any), ('a, 'b, 'c)) => 'any = "useMemo"
+external useMemo3: (@uncurry unit => 'any, ('a, 'b, 'c)) => 'any = "useMemo"
 
 @module("preact/hooks")
-external useMemo4: (@uncurry (unit => 'any), ('a, 'b, 'c, 'd)) => 'any = "useMemo"
+external useMemo4: (@uncurry unit => 'any, ('a, 'b, 'c, 'd)) => 'any = "useMemo"
 
 @module("preact/hooks")
-external useMemo5: (@uncurry (unit => 'any), ('a, 'b, 'c, 'd, 'e)) => 'any = "useMemo"
+external useMemo5: (@uncurry unit => 'any, ('a, 'b, 'c, 'd, 'e)) => 'any = "useMemo"
 
 @module("preact/hooks")
-external useMemo6: (@uncurry (unit => 'any), ('a, 'b, 'c, 'd, 'e, 'f)) => 'any = "useMemo"
+external useMemo6: (@uncurry unit => 'any, ('a, 'b, 'c, 'd, 'e, 'f)) => 'any = "useMemo"
 
 @module("preact/hooks")
-external useMemo7: (@uncurry (unit => 'any), ('a, 'b, 'c, 'd, 'e, 'f, 'g)) => 'any = "useMemo"
+external useMemo7: (@uncurry unit => 'any, ('a, 'b, 'c, 'd, 'e, 'f, 'g)) => 'any = "useMemo"
 
 @module("preact/hooks")
 external useCallback: ('f, 'deps) => 'f = "useCallback"
@@ -206,32 +215,31 @@ external useCallback7: ('callback, ('a, 'b, 'c, 'd, 'e, 'f, 'g)) => 'callback = 
 // @module("preact/hooks")
 // external useContext: Context.t<'any> => 'any = "useContext"
 
-@module("preact/hooks") external useRef: 'value => ref<'value> = "useRef"
+@module("preact/hooks")
+external useRef: 'value => ref<'value> = "useRef"
 
 module Signal = {
-  type t<'value> = {
-    mutable value: 'value
-  }
+  type t<'value> = {mutable value: 'value}
 
   @module("@preact/signals")
   external make: 'a => t<'a> = "signal"
 
   @set external set: (t<'a>, 'a) => unit = "value"
-  @get external get: (t<'a>) => 'a = "value"
+  @get external get: t<'a> => 'a = "value"
   @send external peek: t<'a> => 'a = "peek"
 
   @module("@preact/signals")
-  external effect: (@uncurry (unit => unit)) => (@uncurry unit => unit) = "effect"
+  external effect: (@uncurry unit => unit) => @uncurry unit => unit = "effect"
 
   @module("@preact/signals")
-  external computed: (@uncurry (unit => 'a)) => t<'a> = "computed"
+  external computed: (@uncurry unit => 'a) => t<'a> = "computed"
 
   @module("@preact/signals")
-  external batch: (@uncurry (unit => unit)) => 'any = "batch"
+  external batch: (@uncurry unit => unit) => 'any = "batch"
 
   @module("@preact/signals")
   external useSignal: 'a => t<'a> = "useSignal"
 
   @module("@preact/signals")
-  external useComputed: (@uncurry (unit => 'a)) => t<'a> = "useComputed"
+  external useComputed: (@uncurry unit => 'a) => t<'a> = "useComputed"
 }

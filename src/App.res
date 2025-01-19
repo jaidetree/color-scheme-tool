@@ -26,9 +26,7 @@ let make = () => {
         </ul>
       </div>
       <div className="color-wheel p-16">
-        <svg viewBox="0 0 600 600">
-          <circle r="300" cx="300" cy="300" fill="white" />
-        </svg>
+        <ColorWheel />
       </div>
       <div className="flex flex-row justify-center gap-2">
         <button> {Preact.string("Custom")} </button>
@@ -40,7 +38,7 @@ let make = () => {
         <button> {Preact.string("Quads")} </button>
       </div>
     </main>
-    <aside className="sidebar flex bg-gray-950 w-80 flex flex-col gap-4">
+    <aside className="sidebar bg-gray-950 w-80 flex flex-col gap-4">
       <nav className="p-4 flex flex-row items-start gap-2">
         <button value="properties"> {Preact.string("inspector")} </button>
         <button value="palettes"> {Preact.string("palettes")} </button>
