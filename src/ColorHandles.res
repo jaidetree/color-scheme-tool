@@ -13,7 +13,11 @@ let handleSignal: Signal.t<handleState> = Signal.make({
 @jsx.component
 let make = (~children: Preact.element) => {
   let onClick = (e: JsxEvent.Mouse.t) => {
-    let element = e->JsxEvent.Mouse.currentTarget->DomUtils.target
+    let container = e->JsxEvent.Mouse.currentTarget->DomUtils.target
+    let element =
+      container
+      ->DomUtils.querySelector("canvas")
+      ->Option.getExn(~message="Canvas element not found")
     let rect = element->DomUtils.getBoundingClientRect
     let scrollX = DomUtils.Window.scrollX
     let scrollY = DomUtils.Window.scrollY
@@ -29,22 +33,28 @@ let make = (~children: Preact.element) => {
 
     let hyp = Math.hypot(relativeX->Int.toFloat, relativeY->Int.toFloat)
 
-    handleSignal->Signal.set(
-      if hyp > 300.0 {
-        let w = relativeY->Int.toFloat *. 300.0 /. hyp
-        let z = relativeX->Int.toFloat *. 300.0 /. hyp
+    let paddingX = 32
+    let paddingY = 32
 
-        {
-          x: z->Math.round->Float.toInt + 300,
-          y: w->Math.round->Float.toInt + 300,
-        }
-      } else {
-        {
-          x,
-          y,
-        }
-      },
-    )
+    let coords: handleState = if hyp > 300.0 {
+      let w = relativeY->Int.toFloat *. 300.0 /. hyp
+      let z = relativeX->Int.toFloat *. 300.0 /. hyp
+
+      {
+        x: z->Math.round->Float.toInt + 300,
+        y: w->Math.round->Float.toInt + 300,
+      }
+    } else {
+      {
+        x,
+        y,
+      }
+    }
+
+    handleSignal->Signal.set({
+      x: coords.x + paddingX,
+      y: coords.y + paddingY,
+    })
 
     let angle =
       Math.atan2(~y=relativeY->Int.toFloat, ~x=relativeX->Int.toFloat) *. 180.0 /. Math.Constants.pi
@@ -60,7 +70,7 @@ let make = (~children: Preact.element) => {
 
   let {x, y} = handleSignal->Signal.get
 
-  <div className="handles-ui relative" onClick>
+  <div className="handles-ui relative p-8" onClick>
     <div
       className="handle absolute bg-black/50 border border-white/70 size-5
       rounded-full transform translate-x-[-10px] translate-y-[-10px]"
