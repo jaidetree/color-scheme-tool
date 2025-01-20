@@ -1,32 +1,30 @@
 open Preact
-
-let count = Signal.make(0)
+open State
 
 @jsx.component
 let make = () => {
   <div className="bg-gray-900 min-h-screen text-white flex flex-row items-stretch">
     <main className="flex flex-col flex-grow">
-      <div className="color-list bg-gray-950/40 h-72 p-8">
+      <div className="color-list bg-gray-950/40 p-8">
         <ul className="h-full grid grid-cols-5 gap-4">
-          <li className="flex flex-col items-center justify-end p-4 rounded-lg border border-white">
-            {Preact.string("#ffffff")}
-          </li>
-          <li className="flex flex-col items-center justify-end p-4 rounded-lg border border-white">
-            {Preact.string("#ffffff")}
-          </li>
-          <li className="flex flex-col items-center justify-end p-4 rounded-lg border border-white">
-            {Preact.string("#ffffff")}
-          </li>
-          <li className="flex flex-col items-center justify-end p-4 rounded-lg border border-white">
-            {Preact.string("#ffffff")}
-          </li>
-          <li className="flex flex-col items-center justify-end p-4 rounded-lg border border-white">
-            {Preact.string("#ffffff")}
-          </li>
+          {colorsSignal
+          ->Signal.get
+          ->Array.mapWithIndex((color, i) => {
+            <li key={i->Int.toString} className="flex flex-col items-center justify-stretch gap-2">
+              {Preact.string("#" ++ color)}
+              <div
+                className="flex flex-col items-center justify-end rounded-lg border border-white w-full h-[16rem]"
+                style={{backgroundColor: "#" ++ color}}
+              />
+            </li>
+          })
+          ->Preact.array}
         </ul>
       </div>
-      <div className="color-wheel p-16">
-        <ColorWheel />
+      <div className="color-wheel p-16 flex flex-row justify-center">
+        <ColorHandles>
+          <ColorWheel />
+        </ColorHandles>
       </div>
       <div className="flex flex-row justify-center gap-2">
         <button> {Preact.string("Custom")} </button>
@@ -38,13 +36,13 @@ let make = () => {
         <button> {Preact.string("Quads")} </button>
       </div>
     </main>
-    <aside className="sidebar bg-gray-950 w-80 flex flex-col gap-4">
-      <nav className="p-4 flex flex-row items-start gap-2">
+    <aside className="sidebar bg-gray-950 w-96 flex flex-col gap-4">
+      <nav className="p-8 flex flex-row items-start gap-2">
         <button value="properties"> {Preact.string("inspector")} </button>
         <button value="palettes"> {Preact.string("palettes")} </button>
       </nav>
       <section>
-        <form className="p-4 flex flex-col gap-2">
+        <form className="p-8 flex flex-col gap-2">
           <div className="flex flex-row gap-2">
             <label className="w-20" htmlFor="id_props_red"> {Preact.string("Red")} </label>
             <input
@@ -102,7 +100,17 @@ let make = () => {
           <div className="flex flex-row justify-between gap-2 mb-4">
             <label className="w-20" htmlFor="id_props_hex"> {Preact.string("Hex")} </label>
             <input
-              type_="text" id="id_props_hex" value="#ffffff" className="w-16 bg-gray-800 px-2"
+              type_="text"
+              id="id_props_hex"
+              value={getSelectedColor()}
+              className="w-24 bg-gray-800 text-right px-2 font-mono"
+              onInput={e => {
+                e
+                ->JsxEvent.Form.currentTarget
+                ->DomUtils.Event.getValue
+                ->Option.getOr("0e0e0e")
+                ->setSelectedColor
+              }}
             />
           </div>
         </form>
