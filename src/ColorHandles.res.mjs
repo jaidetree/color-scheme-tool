@@ -7,6 +7,8 @@ import * as Core__Option from "@rescript/core/src/Core__Option.res.mjs";
 import * as Signals from "@preact/signals";
 import * as JsxRuntime from "preact/jsx-runtime";
 
+console.log("Hex", "#6af2ff");
+
 console.log("Hex.toRgb", Color.Hex.toRgb("#6af2ff"));
 
 console.log("RGB.toHex", Color.RGB.toHex(Color.Hex.toRgb("#6af2ff")));

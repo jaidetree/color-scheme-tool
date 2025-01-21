@@ -1,6 +1,7 @@
 open Preact
 open Color
 
+Js.Console.log2("Hex", "#6af2ff")
 Js.Console.log2("Hex.toRgb", "#6af2ff"->Hex.toRgb)
 Js.Console.log2("RGB.toHex", "#6af2ff"->Hex.toRgb->RGB.toHex)
 Js.Console.log2("RGB.toHsl", "#6af2ff"->Hex.toRgb->RGB.toHsl)
