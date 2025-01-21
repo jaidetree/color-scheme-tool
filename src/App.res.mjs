@@ -32,11 +32,25 @@ function App(props) {
                                   }),
                               className: "color-list bg-gray-950/40 p-8"
                             }),
-                        JsxRuntime.jsx("div", {
-                              children: JsxRuntime.jsx(ColorHandles.make, {
-                                    children: JsxRuntime.jsx(ColorWheel.make, {})
-                                  }),
-                              className: "color-wheel p-16 flex flex-row justify-center"
+                        JsxRuntime.jsxs("div", {
+                              children: [
+                                JsxRuntime.jsx(ColorHandles.make, {
+                                      children: JsxRuntime.jsx(ColorWheel.make, {})
+                                    }),
+                                JsxRuntime.jsx("input", {
+                                      className: "w-full h-[32rem]",
+                                      style: {
+                                        appearance: "slider-vertical"
+                                      },
+                                      max: "100.00",
+                                      min: "0",
+                                      name: "brightness",
+                                      step: 0.1,
+                                      type: "range",
+                                      orient: "vertical"
+                                    })
+                              ],
+                              className: "color-wheel p-16 flex flex-row justify-center items-center gap-8"
                             }),
                         JsxRuntime.jsxs("div", {
                               children: [

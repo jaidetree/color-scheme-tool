@@ -21,10 +21,20 @@ let make = () => {
           ->Preact.array}
         </ul>
       </div>
-      <div className="color-wheel p-16 flex flex-row justify-center">
+      <div className="color-wheel p-16 flex flex-row justify-center items-center gap-8">
         <ColorHandles>
           <ColorWheel />
         </ColorHandles>
+        <input
+          type_="range"
+          name="brightness"
+          className="w-full h-[32rem]"
+          min="0"
+          max="100.00"
+          step={0.1}
+          orient="vertical"
+          style={{appearance: "slider-vertical"}}
+        />
       </div>
       <div className="flex flex-row justify-center gap-2">
         <button> {Preact.string("Custom")} </button>
