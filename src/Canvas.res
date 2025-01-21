@@ -50,6 +50,22 @@ module Context = {
 
   @set
   external setFillStyle: (t, @unwrap [#color(string) | #gradient(Gradient.t)]) => unit = "fillStyle"
+
+  @send
+  external stroke: t => unit = "stroke"
+
+  @get
+  external getStrokeStyle: t => string = "strokeStyle"
+
+  @set
+  external setStrokeStyle: (t, @unwrap [#color(string) | #gradient(Gradient.t)]) => unit =
+    "strokeStyle"
+
+  @get
+  external getLineWidth: t => int = "lineWidth"
+
+  @set
+  external setLineWidth: (t, int) => unit = "lineWidth"
 }
 
 @send
