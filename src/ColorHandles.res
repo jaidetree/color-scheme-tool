@@ -1,4 +1,11 @@
 open Preact
+open Color
+
+Js.Console.log2("Hex.toRgb", "#6af2ff"->Hex.toRgb)
+Js.Console.log2("RGB.toHex", "#6af2ff"->Hex.toRgb->RGB.toHex)
+Js.Console.log2("RGB.toHsl", "#6af2ff"->Hex.toRgb->RGB.toHsl)
+Js.Console.log2("Hex->rgb->hsl->rgb", "#6af2ff"->Hex.toRgb->RGB.toHsl->HSL.toRgb)
+Js.Console.log2("Hex->rgb->hsl->rgb->hex", "#6af2ff"->Hex.toRgb->RGB.toHsl->HSL.toRgb->RGB.toHex)
 
 type handleState = {
   x: int,
@@ -57,6 +64,12 @@ let make = (~children: Preact.element) => {
     })
 
     let angle = Math.atan2(~y=relativeY, ~x=relativeX) *. 180.0 /. Math.Constants.pi
+    let angle = if angle < 0.0 {
+      // 180.0 -. Math.abs(angle) +. 180.0
+      360.0 +. Math.abs(angle)
+    } else {
+      angle
+    }
 
     Js.Console.log({
       "x": relativeX,
