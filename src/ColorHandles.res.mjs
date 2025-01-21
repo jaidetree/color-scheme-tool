@@ -22,8 +22,8 @@ function ColorHandles(props) {
     var pageY = e.pageY;
     var x = (pageX - rect.left | 0) - scrollX | 0;
     var y = (pageY - rect.top | 0) - scrollY | 0;
-    var relativeX = x - 300 | 0;
-    var relativeY = y - 300 | 0;
+    var relativeX = x - 300.0;
+    var relativeY = y - 300.0;
     var hyp = Math.hypot(relativeX, relativeY);
     var coords;
     if (hyp > 300.0) {
@@ -56,7 +56,7 @@ function ColorHandles(props) {
   return JsxRuntime.jsxs("div", {
               children: [
                 JsxRuntime.jsx("div", {
-                      className: "handle absolute bg-black/50 border border-white/70 size-5\n      rounded-full transform translate-x-[-10px] translate-y-[-10px]",
+                      className: "handle absolute bg-black/50 border border-white/70 size-5 rounded-full transform translate-x-[-10px] translate-y-[-10px] z-40",
                       style: {
                         left: match.x.toString() + "px",
                         top: match.y.toString() + "px"

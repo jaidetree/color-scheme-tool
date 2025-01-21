@@ -28,17 +28,17 @@ let make = (~children: Preact.element) => {
     let x = pageX - rect.left - scrollX
     let y = pageY - rect.top - scrollY
 
-    let relativeX = x - 300
-    let relativeY = y - 300
+    let relativeX = x->Int.toFloat -. 300.0
+    let relativeY = y->Int.toFloat -. 300.0
 
-    let hyp = Math.hypot(relativeX->Int.toFloat, relativeY->Int.toFloat)
+    let hyp = Math.hypot(relativeX, relativeY)
 
     let paddingX = 32
     let paddingY = 32
 
     let coords: handleState = if hyp > 300.0 {
-      let w = relativeY->Int.toFloat *. 300.0 /. hyp
-      let z = relativeX->Int.toFloat *. 300.0 /. hyp
+      let w = relativeY *. 300.0 /. hyp
+      let z = relativeX *. 300.0 /. hyp
 
       {
         x: z->Math.round->Float.toInt + 300,
@@ -56,8 +56,7 @@ let make = (~children: Preact.element) => {
       y: coords.y + paddingY,
     })
 
-    let angle =
-      Math.atan2(~y=relativeY->Int.toFloat, ~x=relativeX->Int.toFloat) *. 180.0 /. Math.Constants.pi
+    let angle = Math.atan2(~y=relativeY, ~x=relativeX) *. 180.0 /. Math.Constants.pi
 
     Js.Console.log({
       "x": relativeX,
@@ -72,8 +71,7 @@ let make = (~children: Preact.element) => {
 
   <div className="handles-ui relative p-8" onClick>
     <div
-      className="handle absolute bg-black/50 border border-white/70 size-5
-      rounded-full transform translate-x-[-10px] translate-y-[-10px]"
+      className="handle absolute bg-black/50 border border-white/70 size-5 rounded-full transform translate-x-[-10px] translate-y-[-10px] z-40"
       style={{left: `${x->Int.toString}px`, top: `${y->Int.toString}px`}}
     />
     children
