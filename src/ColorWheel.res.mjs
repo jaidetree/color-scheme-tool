@@ -6,12 +6,12 @@ import * as JsxRuntime from "preact/jsx-runtime";
 
 var colors = [
   "red",
-  "orange",
-  "yellow",
-  "green",
-  "cyan",
-  "blue",
   "magenta",
+  "blue",
+  "cyan",
+  "green",
+  "yellow",
+  "orange",
   "red"
 ];
 
@@ -51,12 +51,29 @@ function ColorWheel(props) {
   Hooks.useEffect((function () {
           logRef();
         }), []);
-  return JsxRuntime.jsx(JsxRuntime.Fragment, {
-              children: Caml_option.some(JsxRuntime.jsx("canvas", {
-                        ref: Caml_option.some(canvasRef),
-                        height: "600",
-                        width: "600"
-                      }))
+  return JsxRuntime.jsxs("div", {
+              children: [
+                JsxRuntime.jsx("canvas", {
+                      ref: Caml_option.some(canvasRef),
+                      className: "relative z-20",
+                      height: "600",
+                      width: "600"
+                    }),
+                JsxRuntime.jsx("svg", {
+                      children: JsxRuntime.jsx("circle", {
+                            cx: "320",
+                            cy: "320",
+                            fill: "rgba(0, 0, 0, 0.25)",
+                            r: "320",
+                            strokeWidth: "20"
+                          }),
+                      className: "absolute left-0 top-0 z-10 transform -translate-x-5 -translate-y-5",
+                      height: "640",
+                      width: "640",
+                      viewBox: "0 0 640 640"
+                    })
+              ],
+              className: "relative"
             });
 }
 

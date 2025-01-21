@@ -1,6 +1,6 @@
 open Preact
 
-let colors = ["red", "orange", "yellow", "green", "cyan", "blue", "magenta", "red"]
+let colors = ["red", "magenta", "blue", "cyan", "green", "yellow", "orange", "red"]
 
 let circle = (ctx: Canvas.Context.t, fill: Canvas.Gradient.t) => {
   ctx->Canvas.Context.beginPath
@@ -56,7 +56,14 @@ let make = () => {
     None
   })
 
-  <>
-    <canvas ref={Ref.domRef(canvasRef)} width="600" height="600" />
-  </>
+  <div className="relative">
+    <canvas ref={Ref.domRef(canvasRef)} width="600" height="600" className="relative z-20" />
+    <svg
+      viewBox="0 0 640 640"
+      className="absolute left-0 top-0 z-10 transform -translate-x-5 -translate-y-5"
+      width="640"
+      height="640">
+      <circle cx="320" cy="320" r="320" strokeWidth="20" fill="rgba(0, 0, 0, 0.25)" />
+    </svg>
+  </div>
 }
