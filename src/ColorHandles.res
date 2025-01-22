@@ -1,12 +1,6 @@
 open Preact
 open Color
-
-Js.Console.log2("Hex", "#6af2ff")
-Js.Console.log2("Hex.toRgb", "#6af2ff"->Hex.toRgb)
-Js.Console.log2("RGB.toHex", "#6af2ff"->Hex.toRgb->RGB.toHex)
-Js.Console.log2("RGB.toHsl", "#6af2ff"->Hex.toRgb->RGB.toHsl)
-Js.Console.log2("Hex->rgb->hsl->rgb", "#6af2ff"->Hex.toRgb->RGB.toHsl->HSL.toRgb)
-Js.Console.log2("Hex->rgb->hsl->rgb->hex", "#6af2ff"->Hex.toRgb->RGB.toHsl->HSL.toRgb->RGB.toHex)
+open State
 
 type handleState = {
   x: int,
@@ -66,28 +60,44 @@ let make = (~children: Preact.element) => {
 
     let angle = Math.atan2(~y=relativeY, ~x=relativeX) *. 180.0 /. Math.Constants.pi
     let angle = if angle < 0.0 {
-      // 180.0 -. Math.abs(angle) +. 180.0
-      360.0 +. Math.abs(angle)
+      360.0 +. angle
     } else {
       angle
     }
 
-    Js.Console.log({
-      "x": relativeX,
-      "y": relativeY,
-      "hyp": hyp,
-      "saturation": hyp->Float.clamp(~min=0.0, ~max=300.0) /. 300.0 *. 100.0,
-      "hue": angle,
-    })
+    let hue = Float.toInt(360.0 -. angle)
+    let sat = Float.toInt(hyp->Float.clamp(~min=0.0, ~max=300.0) /. 300.0 *. 100.0)
+    let val = 50
+
+    let hsl = (hue, sat, val)
+
+    State.setSelectedColor(hsl->HSL.toRgb->RGB.toHex)
+
+    Js.Console.log((hue, sat, val))
   }
 
   let {x, y} = handleSignal->Signal.get
 
   <div className="handles-ui relative p-8" onClick>
     <div
-      className="handle absolute bg-black/50 border border-white/70 size-5 rounded-full transform translate-x-[-10px] translate-y-[-10px] z-40"
+      className="handle absolute bg-black border border-white/70 size-5 rounded-full transform translate-x-[-10px] translate-y-[-10px] z-40"
       style={{left: `${x->Int.toString}px`, top: `${y->Int.toString}px`}}
     />
+    <div className="handle-bars absolute left-0 top-0 right-0 bottom-0 p-8 z-30">
+      <svg viewBox="0 0 600 600" width="600" height="600">
+        <line
+          x1="300"
+          y1="300"
+          x2={Int.toString(x - 32)}
+          y2={Int.toString(y - 32)}
+          stroke="rgba(0, 0, 0, 0.5)"
+          style={{
+            strokeWidth: "2",
+            strokeLinecap: "round",
+          }}
+        />
+      </svg>
+    </div>
     children
   </div>
 }

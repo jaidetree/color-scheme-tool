@@ -4,62 +4,47 @@ import * as Core__Int from "@rescript/core/src/Core__Int.res.mjs";
 import * as Core__Option from "@rescript/core/src/Core__Option.res.mjs";
 import * as Caml_splice_call from "rescript/lib/es6/caml_splice_call.js";
 
-function between(h$p, min, max) {
-  if (min <= h$p) {
-    return h$p < max;
-  } else {
-    return false;
-  }
-}
-
-function hueToRgb(h$p, c, x) {
-  if (between(h$p, 0, 1)) {
-    return [
-            c,
-            x,
-            0.0
-          ];
-  } else if (between(h$p, 1, 2)) {
-    return [
-            x,
-            c,
-            0.0
-          ];
-  } else if (between(h$p, 2, 3)) {
-    return [
-            0.0,
-            c,
-            x
-          ];
-  } else if (between(h$p, 3, 4)) {
-    return [
-            0.0,
-            x,
-            c
-          ];
-  } else if (between(h$p, 4, 5)) {
-    return [
-            x,
-            0.0,
-            c
-          ];
-  } else {
-    return [
-            c,
-            0.0,
-            x
-          ];
-  }
-}
-
 function toRgb(param) {
+  var h = param[0];
   var s = param[1] / 100.0;
   var l = param[2] / 100.0;
   var c = (1.0 - Math.abs(2.0 * l - 1.0)) * s;
-  var h$p = param[0] / 60.0;
+  var h$p = h / 60.0;
   var x = c * (1.0 - Math.abs(h$p % 2.0 - 1.0));
   var m = l - c / 2.0;
-  var match = hueToRgb(h$p, c, x);
+  var match = 0.0 <= h && h <= 60.0 ? [
+      c,
+      x,
+      0.0
+    ] : (
+      h <= 120.0 ? [
+          x,
+          c,
+          0.0
+        ] : (
+          h <= 180.0 ? [
+              0.0,
+              c,
+              x
+            ] : (
+              h <= 240.0 ? [
+                  0.0,
+                  x,
+                  c
+                ] : (
+                  h <= 300.0 ? [
+                      x,
+                      0.0,
+                      c
+                    ] : [
+                      c,
+                      0.0,
+                      x
+                    ]
+                )
+            )
+        )
+    );
   var normalize = function (v) {
     return Math.round((v + m) * 255.0) | 0;
   };
@@ -71,14 +56,14 @@ function toRgb(param) {
 }
 
 var HSL = {
-  between: between,
-  hueToRgb: hueToRgb,
   toRgb: toRgb
 };
 
-function toHex(param) {
+function toHex(param, $staropt$star) {
+  var prefix = $staropt$star !== undefined ? $staropt$star : false;
+  var prefix$1 = prefix ? "#" : "";
   var hexStr = (16777216 | (param[0] << 16) | (param[1] << 8) | param[2]).toString(16).slice(1);
-  return "#" + hexStr;
+  return prefix$1 + hexStr;
 }
 
 function toHsl(param) {

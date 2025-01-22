@@ -1,6 +1,6 @@
 open Preact
 
-let colors = ["red", "magenta", "blue", "cyan", "green", "yellow", "orange", "red"]
+let colors = ["red", "magenta", "blue", "cyan", "green", "yellow", "red"]
 
 let circle = (ctx: Canvas.Context.t, fill: Canvas.Gradient.t) => {
   ctx->Canvas.Context.beginPath

@@ -1,26 +1,6 @@
 module HSL = {
   type t = (int, int, int)
 
-  let between = (h': float, min: int, max: int) => {
-    min->Int.toFloat <= h' && h' < max->Int.toFloat
-  }
-
-  let hueToRgb = (h': float, c: float, x: float) => {
-    if h'->between(0, 1) {
-      (c, x, 0.0)
-    } else if h'->between(1, 2) {
-      (x, c, 0.0)
-    } else if h'->between(2, 3) {
-      (0.0, c, x)
-    } else if h'->between(3, 4) {
-      (0.0, x, c)
-    } else if h'->between(4, 5) {
-      (x, 0.0, c)
-    } else {
-      (c, 0.0, x)
-    }
-  }
-
   let toRgb = ((h, s, l): t) => {
     let h = h->Int.toFloat
     let s = s->Int.toFloat
@@ -34,7 +14,20 @@ module HSL = {
     let x = c *. (1.0 -. Math.abs(Float.mod(h', 2.0) -. 1.0))
     let m = l -. c /. 2.0
 
-    let (r', g', b') = hueToRgb(h', c, x)
+    let (r', g', b') = if 0.0 <= h && h <= 60.0 {
+      (c, x, 0.0)
+    } else if h <= 120.0 {
+      (x, c, 0.0)
+    } else if h <= 180.0 {
+      (0.0, c, x)
+    } else if h <= 240.0 {
+      (0.0, x, c)
+    } else if h <= 300.0 {
+      (x, 0.0, c)
+    } else {
+      (c, 0.0, x)
+    }
+
     let normalize = (v: float) => {
       ((v +. m) *. 255.0)->Math.round->Float.toInt
     }
@@ -45,7 +38,8 @@ module HSL = {
 module RGB = {
   type t = (int, int, int)
 
-  let toHex = ((r, g, b): t) => {
+  let toHex = ((r, g, b): t, ~prefix: bool=false) => {
+    let prefix = prefix ? "#" : ""
     let hexStr =
       lsl(1, 24)
       ->lor(lsl(r, 16))
@@ -54,7 +48,7 @@ module RGB = {
       ->Int.toString(~radix=16)
       ->String.sliceToEnd(~start=1)
 
-    "#" ++ hexStr
+    prefix ++ hexStr
   }
 
   let toHsl = ((r, g, b): t) => {

@@ -11,7 +11,6 @@ var colors = [
   "cyan",
   "green",
   "yellow",
-  "orange",
   "red"
 ];
 
