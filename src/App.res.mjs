@@ -18,11 +18,11 @@ function App(props) {
                                     children: State.colorsSignal.value.map(function (color, i) {
                                           return JsxRuntime.jsxs("li", {
                                                       children: [
-                                                        "#" + color,
+                                                        "#" + color.hex,
                                                         JsxRuntime.jsx("div", {
                                                               className: "flex flex-col items-center justify-end rounded-lg border border-white w-full h-[16rem]",
                                                               style: {
-                                                                backgroundColor: "#" + color
+                                                                backgroundColor: "#" + color.hex
                                                               }
                                                             })
                                                       ],
@@ -238,9 +238,12 @@ function App(props) {
                                                     className: "w-24 bg-gray-800 text-right px-2 font-mono",
                                                     id: "id_props_hex",
                                                     type: "text",
-                                                    value: State.getSelectedColor(),
+                                                    value: State.getSelectedColor().hex,
                                                     onInput: (function (e) {
-                                                        State.setSelectedColor(Core__Option.getOr(Caml_option.nullable_to_opt(e.currentTarget.value), "0e0e0e"));
+                                                        State.setSelectedColor({
+                                                              TAG: "Hex",
+                                                              _0: Core__Option.getOr(Caml_option.nullable_to_opt(e.currentTarget.value), "0e0e0e")
+                                                            });
                                                       })
                                                   })
                                             ],

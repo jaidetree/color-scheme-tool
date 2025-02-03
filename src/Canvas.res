@@ -11,6 +11,9 @@ module Context = {
   type t
 
   @send
+  external reset: t => unit = "reset"
+
+  @send
   external arc: (
     t,
     ~x: int,

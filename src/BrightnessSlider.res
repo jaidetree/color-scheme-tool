@@ -1,9 +1,8 @@
-open Preact
 open State
 
 @jsx.component
 let make = () => {
-  let {hsv} = colorDataSignal->Signal.get
+  let {hsv} = getSelectedColor()
 
   <input
     type_="range"

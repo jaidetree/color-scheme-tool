@@ -48,19 +48,13 @@ function ColorHandles(props) {
     var angle$1 = angle < 0.0 ? 360.0 + angle : angle;
     var h = 360.0 - angle$1 | 0;
     var s = Core__Float.clamp(0.0, 300.0, hyp) / 300.0 * 100.0 | 0;
-    var match = State.colorDataSignal.value;
-    var v = match.hsv.v;
-    State.setRGB({
+    var match = State.getSelectedColor();
+    State.setSelectedColor({
           TAG: "HSV",
           _0: h,
           _1: s,
-          _2: v
+          _2: match.hsv.v
         });
-    console.log([
-          h,
-          s,
-          v
-        ]);
   };
   var match = handleSignal.value;
   var y = match.y;

@@ -1,6 +1,7 @@
 open Preact
+open State
 
-let colors = ["red", "magenta", "blue", "cyan", "green", "yellow", "red"]
+let colors: array<int> = [360, 300, 240, 180, 120, 60, 0]
 
 let circle = (ctx: Canvas.Context.t, fill: Canvas.Gradient.t) => {
   ctx->Canvas.Context.beginPath
@@ -16,15 +17,21 @@ let circle = (ctx: Canvas.Context.t, fill: Canvas.Gradient.t) => {
   ctx->Canvas.Context.closePath
 }
 
-let drawColorWheel = (canvas: Canvas.canvas) => {
+let drawColorWheel = (canvas: Canvas.canvas, hsv: State.hsv) => {
   let ctx = canvas->Canvas.getContext(#in2d)
+  ctx->Canvas.Context.reset
   let conicGradient = ctx->Canvas.Context.createConicGradient(~startAngle=0, ~x=300, ~y=300)
   let totalColors = colors->Array.length
   let interval = 1.0 /. Int.toFloat(totalColors - 1)
 
-  colors->Array.forEachWithIndex((color, index) => {
+  colors->Array.forEachWithIndex((hue, index) => {
     let i = index->Int.toFloat
     let offset = i *. interval
+    let (h, s, l) = (hue, 100, hsv.v)->Color.HSV.toHSL
+    let h' = h->Int.toString
+    let s' = s->Int.toString
+    let l' = l->Int.toString
+    let color = `hsl(${h'} ${s'}% ${l'}%)`
     conicGradient->Canvas.Gradient.addColorStop(~offset, ~color)
   })
 
@@ -42,19 +49,20 @@ let drawColorWheel = (canvas: Canvas.canvas) => {
 @jsx.component
 let make = () => {
   let canvasRef = useRef(Nullable.null)
+  let {hsv} = getSelectedColor()
 
-  let logRef = _ => {
+  let logRef = (hsv: State.hsv) => {
     switch canvasRef.current {
-    | Value(canvas) => canvas->drawColorWheel
+    | Value(canvas) => canvas->drawColorWheel(hsv)
     | Null | Undefined => Js.Console.log("canvas is not set yet")
     }
   }
 
-  useEffect0(() => {
-    logRef()
+  useEffect3(() => {
+    logRef(hsv)
 
     None
-  })
+  }, (hsv.h, hsv.s, hsv.v))
 
   <div className="relative">
     <canvas ref={Ref.domRef(canvasRef)} width="600" height="600" className="relative z-20" />

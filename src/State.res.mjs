@@ -7,17 +7,135 @@ import * as Signals from "@preact/signals";
 var stateSignal = Signals.signal({
       selectedColor: 0,
       colors: [
-        "000000",
-        "000000",
-        "000000",
-        "000000",
-        "000000"
+        {
+          TAG: "HSV",
+          _0: 360,
+          _1: 100,
+          _2: 100
+        },
+        {
+          TAG: "HSV",
+          _0: 0,
+          _1: 0,
+          _2: 0
+        },
+        {
+          TAG: "HSV",
+          _0: 0,
+          _1: 0,
+          _2: 0
+        },
+        {
+          TAG: "HSV",
+          _0: 0,
+          _1: 0,
+          _2: 0
+        },
+        {
+          TAG: "HSV",
+          _0: 0,
+          _1: 0,
+          _2: 0
+        }
       ]
     });
 
+function parseColorState(color) {
+  switch (color.TAG) {
+    case "Hex" :
+        var hex = color._0;
+        var rgb = Color.Hex.toRGB(hex);
+        var match = Color.RGB.toHSV(rgb);
+        return {
+                rgb: {
+                  r: rgb[0],
+                  g: rgb[1],
+                  b: rgb[2]
+                },
+                hsv: {
+                  h: match[0],
+                  s: match[1],
+                  v: match[2]
+                },
+                hex: hex
+              };
+    case "RGB" :
+        var b = color._2;
+        var g = color._1;
+        var r = color._0;
+        var rgb$1 = [
+          r,
+          g,
+          b
+        ];
+        var hex$1 = Color.RGB.toHex(rgb$1, undefined);
+        var match$1 = Color.RGB.toHSV(rgb$1);
+        return {
+                rgb: {
+                  r: r,
+                  g: g,
+                  b: b
+                },
+                hsv: {
+                  h: match$1[0],
+                  s: match$1[1],
+                  v: match$1[2]
+                },
+                hex: hex$1
+              };
+    case "HSV" :
+        var v = color._2;
+        var s = color._1;
+        var h = color._0;
+        var hsv = [
+          h,
+          s,
+          v
+        ];
+        var rgb$2 = Color.HSV.toRGB(hsv);
+        var hex$2 = Color.RGB.toHex(rgb$2, undefined);
+        return {
+                rgb: {
+                  r: rgb$2[0],
+                  g: rgb$2[1],
+                  b: rgb$2[2]
+                },
+                hsv: {
+                  h: h,
+                  s: s,
+                  v: v
+                },
+                hex: hex$2
+              };
+    
+  }
+}
+
+var colorsSignal = Signals.computed(function () {
+      var match = stateSignal.value;
+      return match.colors.map(parseColorState);
+    });
+
+var selectedColorSignal = Signals.computed(function () {
+      var match = stateSignal.value;
+      var colors = colorsSignal.value;
+      return Core__Option.getOr(colors[match.selectedColor], {
+                  rgb: {
+                    r: 0,
+                    g: 0,
+                    b: 0
+                  },
+                  hsv: {
+                    h: 0,
+                    s: 0,
+                    v: 0
+                  },
+                  hex: "000000"
+                });
+    });
+
 function getSelectedColor() {
-  var match = stateSignal.value;
-  return Core__Option.getOr(match.colors[match.selectedColor], "000000");
+  return selectedColorSignal.value;
 }
 
 function setSelectedColor(color) {
@@ -29,157 +147,24 @@ function setSelectedColor(color) {
   };
 }
 
-var colorsSignal = Signals.computed(function () {
-      return stateSignal.value.colors;
-    });
-
-var colorDataSignal = Signals.computed(function () {
-      var color = getSelectedColor();
-      var rgb = Color.Hex.toRGB(color);
-      var match = Color.RGB.toHSV(rgb);
-      return {
-              rgb: {
-                r: rgb[0],
-                g: rgb[1],
-                b: rgb[2]
-              },
-              hsv: {
-                h: match[0],
-                s: match[1],
-                v: match[2]
-              }
-            };
-    });
-
-function setRGB(input) {
-  var match = colorDataSignal.value;
-  var hsv = match.hsv;
-  var v = hsv.v;
-  var s = hsv.s;
-  var h = hsv.h;
-  var rgb = match.rgb;
-  var b = rgb.b;
-  var g = rgb.g;
-  var r = rgb.r;
-  var color;
-  switch (input.TAG) {
-    case "Hex" :
-        color = {
-          TAG: "Hex",
-          _0: input._0
-        };
-        break;
-    case "RGB" :
-        color = {
-          TAG: "RGB",
-          _0: input._0,
-          _1: input._1,
-          _2: input._2
-        };
-        break;
-    case "HSV" :
-        color = {
-          TAG: "HSV",
-          _0: input._0,
-          _1: input._1,
-          _2: input._2
-        };
-        break;
-    case "Red" :
-        color = {
-          TAG: "RGB",
-          _0: input._0,
-          _1: g,
-          _2: b
-        };
-        break;
-    case "Green" :
-        color = {
-          TAG: "RGB",
-          _0: r,
-          _1: input._0,
-          _2: b
-        };
-        break;
-    case "Blue" :
-        color = {
-          TAG: "RGB",
-          _0: r,
-          _1: g,
-          _2: input._0
-        };
-        break;
-    case "Hue" :
-        color = {
-          TAG: "HSV",
-          _0: input._0,
-          _1: s,
-          _2: v
-        };
-        break;
-    case "Saturation" :
-        color = {
-          TAG: "HSV",
-          _0: h,
-          _1: input._0,
-          _2: v
-        };
-        break;
-    case "Value" :
-        color = {
-          TAG: "HSV",
-          _0: h,
-          _1: s,
-          _2: input._0
-        };
-        break;
-    
-  }
-  var tmp;
-  switch (color.TAG) {
-    case "Hex" :
-        tmp = color._0;
-        break;
-    case "RGB" :
-        tmp = Color.RGB.toHex([
-              color._0,
-              color._1,
-              color._2
-            ], undefined);
-        break;
-    case "HSV" :
-        tmp = Color.RGB.toHex(Color.HSV.toRGB([
-                  color._0,
-                  color._1,
-                  color._2
-                ]), undefined);
-        break;
-    
-  }
-  setSelectedColor(tmp);
-}
-
 function setBrightness(value) {
-  var match = colorDataSignal.value;
+  var match = selectedColorSignal.value;
   var hsv = match.hsv;
-  var s = hsv.s;
-  var h = hsv.h;
-  console.log("setBrightness", h.toString() + ", " + s.toString() + ", " + value.toString());
-  setRGB({
+  setSelectedColor({
         TAG: "HSV",
-        _0: h,
-        _1: s,
+        _0: hsv.h,
+        _1: hsv.s,
         _2: value
       });
 }
 
 export {
   stateSignal ,
+  parseColorState ,
+  colorsSignal ,
+  selectedColorSignal ,
   getSelectedColor ,
   setSelectedColor ,
-  colorsSignal ,
-  colorDataSignal ,
-  setRGB ,
   setBrightness ,
 }
 /* stateSignal Not a pure module */

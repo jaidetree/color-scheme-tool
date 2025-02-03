@@ -11,10 +11,10 @@ let make = () => {
           ->Signal.get
           ->Array.mapWithIndex((color, i) => {
             <li key={i->Int.toString} className="flex flex-col items-center justify-stretch gap-2">
-              {Preact.string("#" ++ color)}
+              {Preact.string("#" ++ color.hex)}
               <div
                 className="flex flex-col items-center justify-end rounded-lg border border-white w-full h-[16rem]"
-                style={{backgroundColor: "#" ++ color}}
+                style={{backgroundColor: "#" ++ color.hex}}
               />
             </li>
           })
@@ -103,13 +103,14 @@ let make = () => {
             <input
               type_="text"
               id="id_props_hex"
-              value={getSelectedColor()}
+              value={getSelectedColor().hex}
               className="w-24 bg-gray-800 text-right px-2 font-mono"
               onInput={e => {
                 e
                 ->JsxEvent.Form.currentTarget
                 ->DomUtils.Event.getValue
                 ->Option.getOr("0e0e0e")
+                ->Hex
                 ->setSelectedColor
               }}
             />

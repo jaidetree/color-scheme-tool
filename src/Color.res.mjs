@@ -15,27 +15,27 @@ function toRGB(param) {
       x,
       0.0
     ] : (
-      h < 120 ? [
+      h <= 120 ? [
           x,
           c,
           0.0
         ] : (
-          h < 180 ? [
+          h <= 180 ? [
               0.0,
               c,
               x
             ] : (
-              h < 240 ? [
+              h <= 240 ? [
                   0.0,
                   x,
                   c
                 ] : (
-                  h < 300 ? [
+                  h <= 300 ? [
                       x,
                       0.0,
                       c
                     ] : (
-                      h < 360 ? [
+                      h <= 360 ? [
                           c,
                           0.0,
                           x
@@ -90,27 +90,27 @@ function toRGB$1(param) {
       x,
       0.0
     ] : (
-      h < 120 ? [
+      h <= 120 ? [
           x,
           c,
           0.0
         ] : (
-          h < 180 ? [
+          h <= 180 ? [
               0.0,
               c,
               x
             ] : (
-              h < 240 ? [
+              h <= 240 ? [
                   0.0,
                   x,
                   c
                 ] : (
-                  h < 300 ? [
+                  h <= 300 ? [
                       x,
                       0.0,
                       c
                     ] : (
-                      h < 360 ? [
+                      h <= 360 ? [
                           c,
                           0.0,
                           x
@@ -222,22 +222,6 @@ var Hex = {
   toRGB: toRGB$2
 };
 
-console.log("Hex.toRGB", toRGB$2("6AF2FF"));
-
-console.log("RGB.toHSV", toHSV$1(toRGB$2("6AF2FF")));
-
-console.log("HSV.toRGB", toRGB(toHSV$1(toRGB$2("6AF2FF"))));
-
-console.log("HSV.toRGB", toRGB(toHSV$1(toRGB$2("6AF2FF"))));
-
-console.log("RGB.toHSL", toHSL$1(toRGB$2("6AF2FF")));
-
-console.log("HSL.toRGB", toRGB$1(toHSL$1(toRGB$2("6AF2FF"))));
-
-console.log("HSL.toHSV", toHSV(toHSL$1(toRGB$2("6AF2FF"))));
-
-console.log("HSV.toHSL", toHSL(toHSV$1(toRGB$2("6AF2FF"))));
-
 var RGB = {
   toHSV: toHSV$1,
   toHSL: toHSL$1,
@@ -250,4 +234,4 @@ export {
   HSL ,
   Hex ,
 }
-/*  Not a pure module */
+/* No side effect */

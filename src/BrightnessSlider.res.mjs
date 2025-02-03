@@ -7,7 +7,7 @@ import * as Core__Option from "@rescript/core/src/Core__Option.res.mjs";
 import * as JsxRuntime from "preact/jsx-runtime";
 
 function BrightnessSlider(props) {
-  var match = State.colorDataSignal.value;
+  var match = State.getSelectedColor();
   return JsxRuntime.jsx("input", {
               className: "w-full h-[32rem]",
               style: {

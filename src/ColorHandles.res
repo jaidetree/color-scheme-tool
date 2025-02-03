@@ -67,12 +67,10 @@ let make = (~children: Preact.element) => {
     let h = Float.toInt(360.0 -. angle)
     let s = Float.toInt(hyp->Float.clamp(~min=0.0, ~max=300.0) /. 300.0 *. 100.0)
 
-    let {hsv} = colorDataSignal->Signal.get
+    let {hsv} = getSelectedColor()
     let {v} = hsv
 
-    setRGB(HSV(h, s, v))
-
-    Js.Console.log((h, s, v))
+    setSelectedColor(HSV(h, s, v))
   }
 
   let {x, y} = handleSignal->Signal.get

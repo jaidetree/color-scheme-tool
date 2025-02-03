@@ -12,15 +12,15 @@ module HSV = {
 
     let (r', g', b') = if 0 <= h && h < 60 {
       (c, x, 0.0)
-    } else if h < 120 {
+    } else if h <= 120 {
       (x, c, 0.0)
-    } else if h < 180 {
+    } else if h <= 180 {
       (0.0, c, x)
-    } else if h < 240 {
+    } else if h <= 240 {
       (0.0, x, c)
-    } else if h < 300 {
+    } else if h <= 300 {
       (x, 0.0, c)
-    } else if h < 360 {
+    } else if h <= 360 {
       (c, 0.0, x)
     } else {
       (0.0, 0.0, 0.0)
@@ -64,15 +64,15 @@ module HSL = {
 
     let (r', g', b') = if 0 <= h && h < 60 {
       (c, x, 0.0)
-    } else if h < 120 {
+    } else if h <= 120 {
       (x, c, 0.0)
-    } else if h < 180 {
+    } else if h <= 180 {
       (0.0, c, x)
-    } else if h < 240 {
+    } else if h <= 240 {
       (0.0, x, c)
-    } else if h < 300 {
+    } else if h <= 300 {
       (x, 0.0, c)
-    } else if h < 360 {
+    } else if h <= 360 {
       (c, 0.0, x)
     } else {
       (0.0, 0.0, 0.0)
@@ -210,13 +210,3 @@ module Hex = {
     (r, g, b)
   }
 }
-
-Js.Console.log2("Hex.toRGB", "6AF2FF"->Hex.toRGB)
-Js.Console.log2("RGB.toHSV", "6AF2FF"->Hex.toRGB->RGB.toHSV)
-Js.Console.log2("HSV.toRGB", "6AF2FF"->Hex.toRGB->RGB.toHSV->HSV.toRGB)
-Js.Console.log2("HSV.toRGB", "6AF2FF"->Hex.toRGB->RGB.toHSV->HSV.toRGB)
-
-Js.Console.log2("RGB.toHSL", "6AF2FF"->Hex.toRGB->RGB.toHSL)
-Js.Console.log2("HSL.toRGB", "6AF2FF"->Hex.toRGB->RGB.toHSL->HSL.toRGB)
-Js.Console.log2("HSL.toHSV", "6AF2FF"->Hex.toRGB->RGB.toHSL->HSL.toHSV)
-Js.Console.log2("HSV.toHSL", "6AF2FF"->Hex.toRGB->RGB.toHSV->HSV.toHSL)
