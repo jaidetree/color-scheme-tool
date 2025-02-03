@@ -2,61 +2,155 @@
 
 import * as Core__Int from "@rescript/core/src/Core__Int.res.mjs";
 import * as Core__Option from "@rescript/core/src/Core__Option.res.mjs";
-import * as Caml_splice_call from "rescript/lib/es6/caml_splice_call.js";
 
-function toRgb(param) {
+function toRGB(param) {
   var h = param[0];
-  var s = param[1] / 100.0;
-  var l = param[2] / 100.0;
-  var c = (1.0 - Math.abs(2.0 * l - 1.0)) * s;
-  var h$p = h / 60.0;
-  var x = c * (1.0 - Math.abs(h$p % 2.0 - 1.0));
-  var m = l - c / 2.0;
-  var match = 0.0 <= h && h <= 60.0 ? [
+  var s$p = param[1] / 100.0;
+  var v$p = param[2] / 100.0;
+  var c = v$p * s$p;
+  var x = c * (1.0 - Math.abs(h / 60.0 % 2.0 - 1.0));
+  var m = v$p - c;
+  var match = 0 <= h && h < 60 ? [
       c,
       x,
       0.0
     ] : (
-      h <= 120.0 ? [
+      h < 120 ? [
           x,
           c,
           0.0
         ] : (
-          h <= 180.0 ? [
+          h < 180 ? [
               0.0,
               c,
               x
             ] : (
-              h <= 240.0 ? [
+              h < 240 ? [
                   0.0,
                   x,
                   c
                 ] : (
-                  h <= 300.0 ? [
+                  h < 300 ? [
                       x,
                       0.0,
                       c
-                    ] : [
-                      c,
-                      0.0,
-                      x
-                    ]
+                    ] : (
+                      h < 360 ? [
+                          c,
+                          0.0,
+                          x
+                        ] : [
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                    )
                 )
             )
         )
     );
-  var normalize = function (v) {
-    return Math.round((v + m) * 255.0) | 0;
-  };
+  var r = Math.round((match[0] + m) * 255.0) | 0;
+  var g = Math.round((match[1] + m) * 255.0) | 0;
+  var b = Math.round((match[2] + m) * 255.0) | 0;
   return [
-          normalize(match[0]),
-          normalize(match[1]),
-          normalize(match[2])
+          r,
+          g,
+          b
+        ];
+}
+
+function toHSL(param) {
+  var v = param[2] / 100.0;
+  var sv = param[1] / 100.0;
+  var l = v * (1.0 - sv / 2.0);
+  var s = l === 0.0 || l === 1.0 ? 0.0 : (v - l) / Math.min(l, 1.0 - l);
+  var s$1 = Math.round(s * 100.0) | 0;
+  var l$1 = Math.round(l * 100.0) | 0;
+  return [
+          param[0],
+          s$1,
+          l$1
+        ];
+}
+
+var HSV = {
+  toRGB: toRGB,
+  toHSL: toHSL
+};
+
+function toRGB$1(param) {
+  var h = param[0];
+  var s = param[1] / 100.0;
+  var l = param[2] / 100.0;
+  var c = (1.0 - Math.abs(2.0 * l - 1.0)) * s;
+  var x = c * (1.0 - Math.abs(h / 60.0 % 2.0 - 1.0));
+  var m = l - c / 2.0;
+  var match = 0 <= h && h < 60 ? [
+      c,
+      x,
+      0.0
+    ] : (
+      h < 120 ? [
+          x,
+          c,
+          0.0
+        ] : (
+          h < 180 ? [
+              0.0,
+              c,
+              x
+            ] : (
+              h < 240 ? [
+                  0.0,
+                  x,
+                  c
+                ] : (
+                  h < 300 ? [
+                      x,
+                      0.0,
+                      c
+                    ] : (
+                      h < 360 ? [
+                          c,
+                          0.0,
+                          x
+                        ] : [
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                    )
+                )
+            )
+        )
+    );
+  var r = Math.round((match[0] + m) * 255.0) | 0;
+  var g = Math.round((match[1] + m) * 255.0) | 0;
+  var b = Math.round((match[2] + m) * 255.0) | 0;
+  return [
+          r,
+          g,
+          b
+        ];
+}
+
+function toHSV(param) {
+  var sl = param[1] / 100.0;
+  var l = param[2] / 100.0;
+  var v = l + sl * Math.min(l, 1.0 - l);
+  var s = v === 0.0 ? 0.0 : 2.0 * (1.0 - l / v);
+  var s$1 = Math.round(s * 100.0) | 0;
+  var v$1 = Math.round(v * 100.0) | 0;
+  return [
+          param[0],
+          s$1,
+          v$1
         ];
 }
 
 var HSL = {
-  toRgb: toRgb
+  toRGB: toRGB$1,
+  toHSV: toHSV
 };
 
 function toHex(param, $staropt$star) {
@@ -66,44 +160,52 @@ function toHex(param, $staropt$star) {
   return prefix$1 + hexStr;
 }
 
-function toHsl(param) {
-  var r = param[0] / 255.0;
-  var g = param[1] / 255.0;
-  var b = param[2] / 255.0;
-  var floats = [
-    r,
-    g,
-    b
-  ];
-  var max = Caml_splice_call.spliceApply(Math.max, [floats]);
-  var min = Caml_splice_call.spliceApply(Math.min, [floats]);
-  var delta = max - min;
-  var lightness = (max + min) / 2.0;
-  var saturation = max === min ? 0.0 : (
-      lightness > 0.5 ? delta / (2.0 - max - min) : delta / (max + min)
-    );
-  var hue$p = max === min ? 0.0 : (
-      max === r ? (g - b) / delta % 6.0 : (
-          max === g ? (b - r) / delta + 2.0 : (r - g) / delta + 4.0
-        )
-    );
-  var hue = Math.round(hue$p * 60.0) | 0;
-  var hue$1 = hue < 0 ? hue + 360 | 0 : hue;
-  var saturation$1 = Math.round(saturation * 100.0) | 0;
-  var lightness$1 = Math.round(lightness * 100.0) | 0;
+function toHSL$1(param) {
+  var r$p = param[0] / 255.0;
+  var g$p = param[1] / 255.0;
+  var b$p = param[2] / 255.0;
+  var cmax = Math.max(r$p, g$p, b$p);
+  var cmin = Math.min(r$p, g$p, b$p);
+  var delta = cmax - cmin;
+  var h = Math.round(cmax === r$p ? (g$p - b$p) / delta % 6.0 * 60.0 : (
+          cmax === g$p ? ((b$p - r$p) / delta + 2.0) * 60.0 : (
+              cmax === b$p ? ((r$p - g$p) / delta + 4.0) * 60.0 : 0.0
+            )
+        )) | 0;
+  var l = (cmax + cmin) / 2.0;
+  var s = Math.round((
+        delta !== 0.0 ? delta / (1.0 - Math.abs(2.0 * l - 1.0)) : 0.0
+      ) * 100.0) | 0;
+  var l$1 = Math.round(l * 100.0) | 0;
   return [
-          hue$1,
-          saturation$1,
-          lightness$1
+          h,
+          s,
+          l$1
         ];
 }
 
-var RGB = {
-  toHex: toHex,
-  toHsl: toHsl
-};
+function toHSV$1(param) {
+  var r$p = param[0] / 255.0;
+  var g$p = param[1] / 255.0;
+  var b$p = param[2] / 255.0;
+  var cmax = Math.max(r$p, g$p, b$p);
+  var cmin = Math.min(r$p, g$p, b$p);
+  var delta = cmax - cmin;
+  var h = Math.round(cmax === r$p ? (g$p - b$p) / delta % 6.0 * 60.0 : (
+          cmax === g$p ? ((b$p - r$p) / delta + 2.0) * 60.0 : (
+              cmax === b$p ? ((r$p - g$p) / delta + 4.0) * 60.0 : 0.0
+            )
+        )) | 0;
+  var s = Math.round(cmax === 0.0 ? 0.0 : delta / cmax * 100.0) | 0;
+  var v = Math.round(cmax * 100.0) | 0;
+  return [
+          h,
+          s,
+          v
+        ];
+}
 
-function toRgb$1(fullHexStr) {
+function toRGB$2(fullHexStr) {
   var hexStr = fullHexStr.replace("#", "");
   var $$int = Core__Option.getOr(Core__Int.fromString(hexStr, 16), 0);
   var r = ($$int >> 16) & 255;
@@ -117,12 +219,35 @@ function toRgb$1(fullHexStr) {
 }
 
 var Hex = {
-  toRgb: toRgb$1
+  toRGB: toRGB$2
+};
+
+console.log("Hex.toRGB", toRGB$2("6AF2FF"));
+
+console.log("RGB.toHSV", toHSV$1(toRGB$2("6AF2FF")));
+
+console.log("HSV.toRGB", toRGB(toHSV$1(toRGB$2("6AF2FF"))));
+
+console.log("HSV.toRGB", toRGB(toHSV$1(toRGB$2("6AF2FF"))));
+
+console.log("RGB.toHSL", toHSL$1(toRGB$2("6AF2FF")));
+
+console.log("HSL.toRGB", toRGB$1(toHSL$1(toRGB$2("6AF2FF"))));
+
+console.log("HSL.toHSV", toHSV(toHSL$1(toRGB$2("6AF2FF"))));
+
+console.log("HSV.toHSL", toHSL(toHSV$1(toRGB$2("6AF2FF"))));
+
+var RGB = {
+  toHSV: toHSV$1,
+  toHSL: toHSL$1,
+  toHex: toHex
 };
 
 export {
-  HSL ,
   RGB ,
+  HSV ,
+  HSL ,
   Hex ,
 }
-/* No side effect */
+/*  Not a pure module */

@@ -1,5 +1,4 @@
 open Preact
-open Color
 open State
 
 type handleState = {
@@ -65,15 +64,15 @@ let make = (~children: Preact.element) => {
       angle
     }
 
-    let hue = Float.toInt(360.0 -. angle)
-    let sat = Float.toInt(hyp->Float.clamp(~min=0.0, ~max=300.0) /. 300.0 *. 100.0)
-    let val = 50
+    let h = Float.toInt(360.0 -. angle)
+    let s = Float.toInt(hyp->Float.clamp(~min=0.0, ~max=300.0) /. 300.0 *. 100.0)
 
-    let hsl = (hue, sat, val)
+    let {hsv} = colorDataSignal->Signal.get
+    let {v} = hsv
 
-    State.setSelectedColor(hsl->HSL.toRgb->RGB.toHex)
+    setRGB(HSV(h, s, v))
 
-    Js.Console.log((hue, sat, val))
+    Js.Console.log((h, s, v))
   }
 
   let {x, y} = handleSignal->Signal.get

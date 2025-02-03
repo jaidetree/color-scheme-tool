@@ -25,16 +25,7 @@ let make = () => {
         <ColorHandles>
           <ColorWheel />
         </ColorHandles>
-        <input
-          type_="range"
-          name="brightness"
-          className="w-full h-[32rem]"
-          min="0"
-          max="100.00"
-          step={0.1}
-          orient="vertical"
-          style={{appearance: "slider-vertical"}}
-        />
+        <BrightnessSlider />
       </div>
       <div className="flex flex-row justify-center gap-2">
         <button> {Preact.string("Custom")} </button>

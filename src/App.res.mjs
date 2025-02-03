@@ -5,6 +5,7 @@ import * as ColorWheel from "./ColorWheel.res.mjs";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as ColorHandles from "./ColorHandles.res.mjs";
 import * as Core__Option from "@rescript/core/src/Core__Option.res.mjs";
+import * as BrightnessSlider from "./BrightnessSlider.res.mjs";
 import * as JsxRuntime from "preact/jsx-runtime";
 
 function App(props) {
@@ -37,18 +38,7 @@ function App(props) {
                                 JsxRuntime.jsx(ColorHandles.make, {
                                       children: JsxRuntime.jsx(ColorWheel.make, {})
                                     }),
-                                JsxRuntime.jsx("input", {
-                                      className: "w-full h-[32rem]",
-                                      style: {
-                                        appearance: "slider-vertical"
-                                      },
-                                      max: "100.00",
-                                      min: "0",
-                                      name: "brightness",
-                                      step: 0.1,
-                                      type: "range",
-                                      orient: "vertical"
-                                    })
+                                JsxRuntime.jsx(BrightnessSlider.make, {})
                               ],
                               className: "color-wheel p-16 flex flex-row justify-center items-center gap-8"
                             }),

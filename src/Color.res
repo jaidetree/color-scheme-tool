@@ -1,44 +1,112 @@
+module HSV = {
+  type t = (int, int, int)
+
+  let toRGB = ((h, s, v)) => {
+    let h' = h->Int.toFloat
+    let s' = s->Int.toFloat /. 100.0
+    let v' = v->Int.toFloat /. 100.0
+
+    let c = v' *. s'
+    let x = c *. (1.0 -. Math.abs(Float.mod(h' /. 60.0, 2.0) -. 1.0))
+    let m = v' -. c
+
+    let (r', g', b') = if 0 <= h && h < 60 {
+      (c, x, 0.0)
+    } else if h < 120 {
+      (x, c, 0.0)
+    } else if h < 180 {
+      (0.0, c, x)
+    } else if h < 240 {
+      (0.0, x, c)
+    } else if h < 300 {
+      (x, 0.0, c)
+    } else if h < 360 {
+      (c, 0.0, x)
+    } else {
+      (0.0, 0.0, 0.0)
+    }
+
+    let r = ((r' +. m) *. 255.0)->Math.round->Float.toInt
+    let g = ((g' +. m) *. 255.0)->Math.round->Float.toInt
+    let b = ((b' +. m) *. 255.0)->Math.round->Float.toInt
+
+    (r, g, b)
+  }
+
+  let toHSL = ((h: int, sv: int, v: int)) => {
+    let v = v->Int.toFloat /. 100.0
+    let sv = sv->Int.toFloat /. 100.0
+
+    let l = v *. (1.0 -. sv /. 2.0)
+    let s = if l == 0.0 || l == 1.0 {
+      0.0
+    } else {
+      (v -. l) /. Math.min(l, 1.0 -. l)
+    }
+    let s = (s *. 100.0)->Math.round->Float.toInt
+    let l = (l *. 100.0)->Math.round->Float.toInt
+
+    (h, s, l)
+  }
+}
+
 module HSL = {
   type t = (int, int, int)
 
-  let toRgb = ((h, s, l): t) => {
-    let h = h->Int.toFloat
-    let s = s->Int.toFloat
-    let l = l->Int.toFloat
+  let toRGB = ((h, s, l): t) => {
+    let h' = h->Int.toFloat
+    let s = s->Int.toFloat /. 100.0
+    let l = l->Int.toFloat /. 100.0
 
-    let s = s /. 100.0
-    let l = l /. 100.0
-
-    let c = (1.0 -. (2.0 *. l -. 1.0)->Math.abs) *. s
-    let h' = h /. 60.0
-    let x = c *. (1.0 -. Math.abs(Float.mod(h', 2.0) -. 1.0))
+    let c = (1.0 -. Math.abs(2.0 *. l -. 1.0)) *. s
+    let x = c *. (1.0 -. Math.abs(Float.mod(h' /. 60.0, 2.0) -. 1.0))
     let m = l -. c /. 2.0
 
-    let (r', g', b') = if 0.0 <= h && h <= 60.0 {
+    let (r', g', b') = if 0 <= h && h < 60 {
       (c, x, 0.0)
-    } else if h <= 120.0 {
+    } else if h < 120 {
       (x, c, 0.0)
-    } else if h <= 180.0 {
+    } else if h < 180 {
       (0.0, c, x)
-    } else if h <= 240.0 {
+    } else if h < 240 {
       (0.0, x, c)
-    } else if h <= 300.0 {
+    } else if h < 300 {
       (x, 0.0, c)
-    } else {
+    } else if h < 360 {
       (c, 0.0, x)
+    } else {
+      (0.0, 0.0, 0.0)
     }
 
-    let normalize = (v: float) => {
-      ((v +. m) *. 255.0)->Math.round->Float.toInt
+    let r = ((r' +. m) *. 255.0)->Math.round->Float.toInt
+    let g = ((g' +. m) *. 255.0)->Math.round->Float.toInt
+    let b = ((b' +. m) *. 255.0)->Math.round->Float.toInt
+
+    (r, g, b)
+  }
+
+  let toHSV = ((h, sl, l)) => {
+    let sl = sl->Int.toFloat /. 100.0
+    let l = l->Int.toFloat /. 100.0
+    let v = l +. sl *. Math.min(l, 1.0 -. l)
+
+    let s = if v == 0.0 {
+      0.0
+    } else {
+      2.0 *. (1.0 -. l /. v)
     }
-    (r'->normalize, g'->normalize, b'->normalize)
+
+    let s = (s *. 100.0)->Math.round->Float.toInt
+    let v = (v *. 100.0)->Math.round->Float.toInt
+
+    (h, s, v)
   }
 }
 
 module RGB = {
   type t = (int, int, int)
 
-  let toHex = ((r, g, b): t, ~prefix: bool=false) => {
+  let toHex = ((r, g, b), ~prefix=false) => {
     let prefix = prefix ? "#" : ""
     let hexStr =
       lsl(1, 24)
@@ -51,57 +119,87 @@ module RGB = {
     prefix ++ hexStr
   }
 
-  let toHsl = ((r, g, b): t) => {
-    let r = r->Int.toFloat /. 255.0
-    let g = g->Int.toFloat /. 255.0
-    let b = b->Int.toFloat /. 255.0
+  let toHSL = ((r, g, b): t) => {
+    let r' = r->Int.toFloat /. 255.0
+    let g' = g->Int.toFloat /. 255.0
+    let b' = b->Int.toFloat /. 255.0
 
-    let floats = [r, g, b]
+    let cmax = Math.maxMany([r', g', b'])
+    let cmin = Math.minMany([r', g', b'])
 
-    let max = Math.maxMany(floats)
-    let min = Math.minMany(floats)
+    let delta = cmax -. cmin
 
-    let delta = max -. min
+    let h =
+      if cmax == r' {
+        Float.mod((g' -. b') /. delta, 6.0) *. 60.0
+      } else if cmax == g' {
+        ((b' -. r') /. delta +. 2.0) *. 60.0
+      } else if cmax == b' {
+        ((r' -. g') /. delta +. 4.0) *. 60.0
+      } else {
+        0.0
+      }
+      ->Math.round
+      ->Float.toInt
 
-    let lightness = (max +. min) /. 2.0
+    let l = (cmax +. cmin) /. 2.0
 
-    let saturation = if max == min {
-      0.0
-    } else if lightness > 0.5 {
-      delta /. (2.0 -. max -. min)
-    } else {
-      delta /. (max +. min)
-    }
+    let s =
+      (if delta != 0.0 {
+        delta /. (1.0 -. Math.abs(2.0 *. l -. 1.0))
+      } else {
+        0.0
+      } *. 100.0)
+      ->Math.round
+      ->Float.toInt
 
-    let hue' = if max === min {
-      0.0
-    } else if max == r {
-      Float.mod((g -. b) /. delta, 6.0)
-    } else if max == g {
-      (b -. r) /. delta +. 2.0
-    } else {
-      // It must be equal to b
-      (r -. g) /. delta +. 4.0
-    }
-    // No catch-all needed as there should be no situation where the max is not
-    // equal to r, g, or b,
+    let l = (l *. 100.0)->Math.round->Float.toInt
 
-    let hue = (hue' *. 60.0)->Math.round->Float.toInt
-    let hue = if hue < 0 {
-      hue + 360
-    } else {
-      hue
-    }
+    (h, s, l)
+  }
 
-    let saturation = (saturation *. 100.0)->Math.round->Float.toInt
-    let lightness = (lightness *. 100.0)->Math.round->Float.toInt
+  let toHSV = ((r, g, b)) => {
+    let r' = r->Int.toFloat /. 255.0
+    let g' = g->Int.toFloat /. 255.0
+    let b' = b->Int.toFloat /. 255.0
 
-    (hue, saturation, lightness)
+    let cmax = Math.maxMany([r', g', b'])
+    let cmin = Math.minMany([r', g', b'])
+
+    let delta = cmax -. cmin
+
+    let h =
+      if cmax == r' {
+        Float.mod((g' -. b') /. delta, 6.0) *. 60.0
+      } else if cmax == g' {
+        ((b' -. r') /. delta +. 2.0) *. 60.0
+      } else if cmax == b' {
+        ((r' -. g') /. delta +. 4.0) *. 60.0
+      } else {
+        0.0
+      }
+      ->Math.round
+      ->Float.toInt
+
+    let s =
+      if cmax == 0.0 {
+        0.0
+      } else {
+        delta /. cmax *. 100.0
+      }
+      ->Math.round
+      ->Float.toInt
+
+    let v = (cmax *. 100.0)->Math.round->Float.toInt
+
+    (h, s, v)
   }
 }
 
 module Hex = {
-  let toRgb = (fullHexStr: string) => {
+  type t = string
+
+  let toRGB = fullHexStr => {
     let hexStr = fullHexStr->String.replace("#", "")
     let int = hexStr->Int.fromString(~radix=16)->Option.getOr(0)
 
@@ -112,3 +210,13 @@ module Hex = {
     (r, g, b)
   }
 }
+
+Js.Console.log2("Hex.toRGB", "6AF2FF"->Hex.toRGB)
+Js.Console.log2("RGB.toHSV", "6AF2FF"->Hex.toRGB->RGB.toHSV)
+Js.Console.log2("HSV.toRGB", "6AF2FF"->Hex.toRGB->RGB.toHSV->HSV.toRGB)
+Js.Console.log2("HSV.toRGB", "6AF2FF"->Hex.toRGB->RGB.toHSV->HSV.toRGB)
+
+Js.Console.log2("RGB.toHSL", "6AF2FF"->Hex.toRGB->RGB.toHSL)
+Js.Console.log2("HSL.toRGB", "6AF2FF"->Hex.toRGB->RGB.toHSL->HSL.toRGB)
+Js.Console.log2("HSL.toHSV", "6AF2FF"->Hex.toRGB->RGB.toHSL->HSL.toHSV)
+Js.Console.log2("HSV.toHSL", "6AF2FF"->Hex.toRGB->RGB.toHSV->HSV.toHSL)
