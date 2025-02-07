@@ -83,8 +83,12 @@ let getSelectedColor = () => {
   selectedColorSignal->Signal.get
 }
 
+let peekSelectedColor = () => {
+  selectedColorSignal->Signal.peek
+}
+
 let setSelectedColor = (color: color) => {
-  let state = stateSignal->Signal.get
+  let state = stateSignal->Signal.peek
   let {selectedColor, colors} = state
 
   let updatedColors = colors->Array.toSpliced(~start=selectedColor, ~remove=1, ~insert=[color])

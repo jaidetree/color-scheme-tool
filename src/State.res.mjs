@@ -138,8 +138,12 @@ function getSelectedColor() {
   return selectedColorSignal.value;
 }
 
+function peekSelectedColor() {
+  return selectedColorSignal.peek();
+}
+
 function setSelectedColor(color) {
-  var state = stateSignal.value;
+  var state = stateSignal.peek();
   var updatedColors = state.colors.toSpliced(state.selectedColor, 1, color);
   stateSignal.value = {
     selectedColor: state.selectedColor,
@@ -164,6 +168,7 @@ export {
   colorsSignal ,
   selectedColorSignal ,
   getSelectedColor ,
+  peekSelectedColor ,
   setSelectedColor ,
   setBrightness ,
 }

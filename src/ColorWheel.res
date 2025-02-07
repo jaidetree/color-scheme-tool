@@ -65,7 +65,13 @@ let make = () => {
   }, (hsv.h, hsv.s, hsv.v))
 
   <div className="relative">
-    <canvas ref={Ref.domRef(canvasRef)} width="600" height="600" className="relative z-20" />
+    <canvas
+      ref={Ref.domRef(canvasRef)}
+      width="600"
+      height="600"
+      className="relative z-20"
+      id="color-wheel"
+    />
     <svg
       viewBox="0 0 640 640"
       className="absolute left-0 top-0 z-10 transform -translate-x-5 -translate-y-5"

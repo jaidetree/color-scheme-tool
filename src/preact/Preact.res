@@ -229,7 +229,7 @@ module Signal = {
   @send external peek: t<'a> => 'a = "peek"
 
   @module("@preact/signals")
-  external effect: (@uncurry unit => unit) => @uncurry unit => unit = "effect"
+  external effect: (@uncurry unit => @uncurry unit => unit) => unit = "effect"
 
   @module("@preact/signals")
   external computed: (@uncurry unit => 'a) => t<'a> = "computed"

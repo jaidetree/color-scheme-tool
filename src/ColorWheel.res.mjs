@@ -73,6 +73,7 @@ function ColorWheel(props) {
                 JsxRuntime.jsx("canvas", {
                       ref: Caml_option.some(canvasRef),
                       className: "relative z-20",
+                      id: "color-wheel",
                       height: "600",
                       width: "600"
                     }),
