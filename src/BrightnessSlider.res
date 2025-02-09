@@ -19,7 +19,8 @@ let make = () => {
       ->DomUtils.Event.getValue
       ->Option.flatMap(Int.fromString(_, ~radix=10))
       ->Option.getOr(0)
-      ->setBrightness
+      ->State.V
+      ->setSelectedColor
     }}
     style={{appearance: "slider-vertical"}}
   />

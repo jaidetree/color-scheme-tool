@@ -133,9 +133,6 @@ Signals.effect(function () {
           match$2 !== undefined ? match$2(dispatch) : undefined
         );
       cleanupEffectRef.contents = cleanup;
-      return function () {
-        
-      };
     });
 
 function calcTriangle(pageX, pageY) {
@@ -206,11 +203,9 @@ var handleSignal = Signals.computed(function () {
 function triangleToColor(param) {
   var h = 360.0 - param.angle | 0;
   var s = Core__Float.clamp(0.0, 300.0, param.hyp) / 300.0 * 100.0 | 0;
-  var match = State.peekSelectedColor();
   return [
           h,
-          s,
-          match.hsv.v
+          s
         ];
 }
 
@@ -218,14 +213,10 @@ Signals.effect(function () {
       var triangle = triangleSignal.value;
       var match = triangleToColor(triangle);
       State.setSelectedColor({
-            TAG: "HSV",
+            TAG: "HS",
             _0: match[0],
-            _1: match[1],
-            _2: match[2]
+            _1: match[1]
           });
-      return function () {
-        
-      };
     });
 
 function ColorHandles(props) {

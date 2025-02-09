@@ -1,5 +1,4 @@
 open Preact
-open State
 
 type dragAction =
   | MouseDown(JsxEvent.Mouse.t)
@@ -85,7 +84,7 @@ let dispatch: dragAction => unit = action => {
   })
 }
 
-let cleanupEffectRef = ref(None)
+let cleanupEffectRef: ref<option<disposable>> = ref(None)
 
 Signal.effect(() => {
   let {prev, next} = dragFsmSignal->Signal.get
@@ -109,9 +108,7 @@ Signal.effect(() => {
 
   cleanupEffectRef.contents = cleanup
 
-  () => {
-    ()
-  }
+  None
 })
 
 type triangle = {
@@ -204,21 +201,16 @@ let triangleToColor = ({hyp, angle}: triangle) => {
   let h = Float.toInt(360.0 -. angle)
   let s = Float.toInt(hyp->Float.clamp(~min=0.0, ~max=300.0) /. 300.0 *. 100.0)
 
-  let {hsv} = peekSelectedColor()
-  let {v} = hsv
-
-  (h, s, v)
+  (h, s)
 }
 
 Signal.effect(() => {
   let triangle = triangleSignal->Signal.get
-  let (h, s, v) = triangleToColor(triangle)
+  let (h, s) = triangleToColor(triangle)
 
-  setSelectedColor(HSV(h, s, v))->ignore
+  State.setSelectedColor(HS(h, s))
 
-  () => {
-    ()
-  }
+  None
 })
 
 @jsx.component
@@ -228,7 +220,7 @@ let make = (~children: Preact.element) => {
   })
 
   let {x, y} = handleSignal->Signal.get
-  let {rgb} = getSelectedColor()
+  let {rgb} = State.getSelectedColor()
 
   <div className="handles-ui relative p-8">
     <button

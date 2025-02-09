@@ -87,7 +87,24 @@ let peekSelectedColor = () => {
   selectedColorSignal->Signal.peek
 }
 
-let setSelectedColor = (color: color) => {
+type colorAction =
+  | R(int)
+  | G(int)
+  | B(int)
+  | H(int)
+  | S(int)
+  | V(int)
+  | Hex(string)
+  | HS(int, int)
+  | None
+
+let colorActionSignal: Signal.t<colorAction> = Signal.make(None)
+
+let setSelectedColor = (colorAction: colorAction): unit => {
+  colorActionSignal->Signal.set(colorAction)
+}
+
+let updateSelectedColor = (color: color) => {
   let state = stateSignal->Signal.peek
   let {selectedColor, colors} = state
 
@@ -99,9 +116,27 @@ let setSelectedColor = (color: color) => {
   })
 }
 
-let setBrightness = (value: int) => {
-  let {hsv} = selectedColorSignal->Signal.get
-  let {h, s} = hsv
+Signal.effect(() => {
+  let action = colorActionSignal->Signal.get
+  let {hsv, rgb} = peekSelectedColor()
 
-  setSelectedColor(HSV(h, s, value))
-}
+  let color: color = switch action {
+  | R(r: int) => RGB(r, rgb.g, rgb.b)
+  | G(g: int) => RGB(rgb.r, g, rgb.b)
+  | B(b: int) => RGB(rgb.r, rgb.g, b)
+
+  | H(h: int) => HSV(h, hsv.s, hsv.v)
+  | S(s: int) => HSV(hsv.h, s, hsv.v)
+  | V(v: int) => HSV(hsv.h, hsv.s, v)
+
+  | HS(h: int, s: int) => HSV(h, s, hsv.v)
+
+  | Hex(hex: string) => Hex(hex)
+
+  | None => HSV(hsv.h, hsv.s, hsv.v)
+  }
+
+  color->updateSelectedColor
+
+  None
+})

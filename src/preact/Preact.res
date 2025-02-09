@@ -61,7 +61,7 @@ module Elements = {
   external someElement: element => option<element> = "%identity"
 }
 
-type ref<'value> = {mutable current: 'value}
+type preactRef<'value> = {mutable current: 'value}
 
 // @module("preact/hooks")
 // external render: (element, Dom.element) => unit = "render"
@@ -71,7 +71,7 @@ type domRef = JsxDOM.domRef
 module Ref = {
   type t = domRef
 
-  type currentDomRef = ref<Js.nullable<Dom.element>>
+  type currentDomRef = preactRef<Js.nullable<Dom.element>>
   type callbackDomRef = Js.nullable<Dom.element> => unit
 
   external domRef: currentDomRef => domRef = "%identity"
@@ -216,7 +216,7 @@ external useCallback7: ('callback, ('a, 'b, 'c, 'd, 'e, 'f, 'g)) => 'callback = 
 // external useContext: Context.t<'any> => 'any = "useContext"
 
 @module("preact/hooks")
-external useRef: 'value => ref<'value> = "useRef"
+external useRef: 'value => preactRef<'value> = "useRef"
 
 module Signal = {
   type t<'value> = {mutable value: 'value}
@@ -229,7 +229,7 @@ module Signal = {
   @send external peek: t<'a> => 'a = "peek"
 
   @module("@preact/signals")
-  external effect: (@uncurry unit => @uncurry unit => unit) => unit = "effect"
+  external effect: (@uncurry unit => option<@uncurry unit => unit>) => unit = "effect"
 
   @module("@preact/signals")
   external computed: (@uncurry unit => 'a) => t<'a> = "computed"

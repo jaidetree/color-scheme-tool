@@ -20,9 +20,12 @@ function BrightnessSlider(props) {
               type: "range",
               value: match.hsv.v.toString(),
               onInput: (function (e) {
-                  State.setBrightness(Core__Option.getOr(Core__Option.flatMap(Caml_option.nullable_to_opt(e.currentTarget.value), (function (__x) {
-                                  return Core__Int.fromString(__x, 10);
-                                })), 0));
+                  State.setSelectedColor({
+                        TAG: "V",
+                        _0: Core__Option.getOr(Core__Option.flatMap(Caml_option.nullable_to_opt(e.currentTarget.value), (function (__x) {
+                                    return Core__Int.fromString(__x, 10);
+                                  })), 0)
+                      });
                 }),
               orient: "vertical"
             });
