@@ -228,11 +228,16 @@ let make = (~children: Preact.element) => {
   })
 
   let {x, y} = handleSignal->Signal.get
+  let {rgb} = getSelectedColor()
 
   <div className="handles-ui relative p-8">
     <button
-      className="handle absolute bg-black border border-white/70 size-5 rounded-full transform translate-x-[-10px] translate-y-[-10px] z-40"
-      style={{left: `${x->Int.toString}px`, top: `${y->Int.toString}px`}}
+      className="handle absolute bg-black border border-black size-5 rounded-full transform translate-x-[-10px] translate-y-[-10px] z-40"
+      style={{
+        left: `${x->Int.toString}px`,
+        top: `${y->Int.toString}px`,
+        backgroundColor: `rgb(${rgb.r->Int.toString}, ${rgb.g->Int.toString}, ${rgb.b->Int.toString})`,
+      }}
       type_="button"
       onMouseDown={onMouseDown}
     />

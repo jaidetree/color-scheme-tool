@@ -238,11 +238,14 @@ function ColorHandles(props) {
   var match = handleSignal.value;
   var y = match.y;
   var x = match.x;
+  var match$1 = State.getSelectedColor();
+  var rgb = match$1.rgb;
   return JsxRuntime.jsxs("div", {
               children: [
                 JsxRuntime.jsx("button", {
-                      className: "handle absolute bg-black border border-white/70 size-5 rounded-full transform translate-x-[-10px] translate-y-[-10px] z-40",
+                      className: "handle absolute bg-black border border-black size-5 rounded-full transform translate-x-[-10px] translate-y-[-10px] z-40",
                       style: {
+                        backgroundColor: "rgb(" + rgb.r.toString() + ", " + rgb.g.toString() + ", " + rgb.b.toString() + ")",
                         left: x.toString() + "px",
                         top: y.toString() + "px"
                       },
