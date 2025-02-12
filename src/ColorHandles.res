@@ -1,4 +1,5 @@
 open Preact
+open State
 
 type dragAction =
   | MouseDown(JsxEvent.Mouse.t)
@@ -26,13 +27,14 @@ type transition = {
 
 let dragFsmSignal: Signal.t<transition> = Signal.make({
   prev: {state: Init, effect: None},
-  next: {state: Idle(632, 332), effect: None},
+  next: {state: Init, effect: None},
 })
 
 let dispatch: dragAction => unit = action => {
   let {next: prev} = dragFsmSignal->Signal.get
 
   let next: machineState = switch (prev.state, action) {
+  | (Init, MouseDown(e))
   | (Idle(_, _), MouseDown(e)) => {
       let x = e->JsxEvent.Mouse.pageX
       let y = e->JsxEvent.Mouse.pageY
@@ -111,104 +113,149 @@ Signal.effect(() => {
   None
 })
 
-type triangle = {
-  angle: float,
-  x: float,
-  y: float,
-  hyp: float,
-}
+module Triangle = {
+  type t = {
+    angle: float,
+    x: float,
+    y: float,
+    hyp: float,
+  }
 
-let calcTriangle = (~pageX: int, ~pageY: int) => {
-  let element = DomUtils.Document.getElementById("color-wheel")
-  switch element {
-  | Some(element) => {
-      Js.Console.log2("canvas", element)
-      let rect = element->DomUtils.getBoundingClientRect
-      let scrollX = DomUtils.Window.scrollX
-      let scrollY = DomUtils.Window.scrollY
+  let fromPos = (~pageX: int, ~pageY: int) => {
+    let element = DomUtils.Document.getElementById("color-wheel")
+    switch element {
+    | Some(element) => {
+        let rect = element->DomUtils.getBoundingClientRect
+        let scrollX = DomUtils.Window.scrollX
+        let scrollY = DomUtils.Window.scrollY
 
-      let x = pageX - rect.left - scrollX
-      let y = pageY - rect.top - scrollY
+        let x = pageX - rect.left - scrollX
+        let y = pageY - rect.top - scrollY
 
-      let relativeX = x->Int.toFloat -. 300.0
-      let relativeY = y->Int.toFloat -. 300.0
+        let relativeX = x->Int.toFloat -. 300.0
+        let relativeY = y->Int.toFloat -. 300.0
 
-      let hyp = Math.hypot(relativeX, relativeY)
+        let hyp = Math.hypot(relativeX, relativeY)
 
-      let angle = Math.atan2(~x=relativeX, ~y=relativeY) *. 180.0 /. Math.Constants.pi
-      let angle = if angle < 0.0 {
-        360.0 +. angle
-      } else {
-        angle
-      }
-
-      if hyp > 300.0 {
-        let w = relativeY *. 300.0 /. hyp
-        let z = relativeX *. 300.0 /. hyp
-        {
-          angle,
-          x: z->Math.round +. 300.0,
-          y: w->Math.round +. 300.0,
-          hyp: 300.0,
+        let angle = Math.atan2(~x=relativeX, ~y=relativeY) *. 180.0 /. Math.Constants.pi
+        let angle = if angle < 0.0 {
+          360.0 +. angle
+        } else {
+          angle
         }
-      } else {
-        {
-          angle,
-          x: x->Int.toFloat,
-          y: y->Int.toFloat,
-          hyp,
+
+        if hyp > 300.0 {
+          let w = relativeY *. 300.0 /. hyp
+          let z = relativeX *. 300.0 /. hyp
+          {
+            angle,
+            x: z->Math.round +. 300.0,
+            y: w->Math.round +. 300.0,
+            hyp: 300.0,
+          }
+        } else {
+          {
+            angle,
+            x: x->Int.toFloat,
+            y: y->Int.toFloat,
+            hyp,
+          }
         }
       }
+    | None => {x: 332.0, y: 332.0, hyp: 300.0, angle: 0.0}
     }
-  | None => {x: 332.0, y: 332.0, hyp: 300.0, angle: 0.0}
+  }
+
+  let toColor = ({hyp, angle}: t) => {
+    let h = Float.toInt(360.0 -. angle)
+    let s = Float.toInt(hyp->Float.clamp(~min=0.0, ~max=300.0) /. 300.0 *. 100.0)
+
+    (h, s)
+  }
+
+  let fromHS = (~h: int, ~s: int): t => {
+    let h' = h->Int.toFloat
+    let theta = Math.Constants.pi *. (h' -. 360.0) /. 180.0
+    let hyp = s->Int.toFloat /. 100.0 *. 300.0
+    let x = hyp *. Math.cos(theta)
+    let y = hyp *. Math.sin(theta)
+
+    {
+      angle: h' +. 360.0,
+      x,
+      y,
+      hyp,
+    }
+  }
+
+  let translateToWheel = ({angle, hyp, x, y}: t): option<t> => {
+    canvasSignal
+    ->Signal.get
+    ->Option.map(canvas => {
+      let rect = canvas->DomUtils.getBoundingClientRect
+      let offsetX = rect.width->Int.toFloat /. 2.0
+      let offsetY = rect.height->Int.toFloat /. 2.0
+
+      let x = x +. offsetX
+      let y = offsetY -. y
+
+      {angle, hyp, x, y}
+    })
   }
 }
-
-let triangleSignal: Signal.t<triangle> = Signal.computed(() => {
-  let {next: {state}} = dragFsmSignal->Signal.get
-
-  let (pageX, pageY) = switch state {
-  | Init => (332, 332)
-  | Idle(x, y) => (x, y)
-  | Dragging(x, y) => (x, y)
-  }
-
-  calcTriangle(~pageX, ~pageY)
-})
 
 type handleState = {
   x: int,
   y: int,
 }
 
-let constrainCursor = ({x, y}: triangle) => {
+let handleSignal: Signal.t<handleState> = Signal.make({x: 0, y: 0})
+
+let moveCursor = ({x, y}: Triangle.t) => {
   let paddingX = 32
   let paddingY = 32
 
-  {
+  handleSignal->Signal.set({
     x: x->Float.toInt + paddingX,
     y: y->Float.toInt + paddingY,
-  }
-}
-
-let handleSignal: Signal.t<handleState> = Signal.computed(() => {
-  let triangle = triangleSignal->Signal.get
-
-  constrainCursor(triangle)
-})
-
-let triangleToColor = ({hyp, angle}: triangle) => {
-  let h = Float.toInt(360.0 -. angle)
-  let s = Float.toInt(hyp->Float.clamp(~min=0.0, ~max=300.0) /. 300.0 *. 100.0)
-
-  (h, s)
+  })
 }
 
 Signal.effect(() => {
-  let triangle = triangleSignal->Signal.get
-  let (h, s) = triangleToColor(triangle)
+  let {next: {state}} = dragFsmSignal->Signal.get
 
-  State.setSelectedColor(HS(h, s))
+  switch state {
+  | Init => ()
+  | Idle(x, y)
+  | Dragging(x, y) => {
+      let triangle = Triangle.fromPos(~pageX=x, ~pageY=y)
+
+      moveCursor(triangle)
+
+      let (h, s) = triangle->Triangle.toColor
+
+      setSelectedColor(HS(h, s))
+    }
+  }
+
+  None
+})
+
+Signal.effect(() => {
+  let action = Actions.signal->Signal.get
+
+  switch action {
+  | InitHSV({hsv})
+  | RGB({hsv})
+  | HSV({hsv})
+  | Hex({hsv}) => {
+      let {h, s} = hsv
+      Triangle.fromHS(~h, ~s)
+      ->Triangle.translateToWheel
+      ->Option.forEach(moveCursor)
+    }
+  | Wheel(_) => ()
+  }
 
   None
 })

@@ -24,42 +24,50 @@ function circle(ctx, fill) {
   ctx.closePath();
 }
 
+function drawColorWheel(canvas, hsv) {
+  var ctx = canvas.getContext("2d");
+  ctx.reset();
+  var conicGradient = ctx.createConicGradient(0, 300, 300);
+  var totalColors = colors.length;
+  var interval = 1.0 / (totalColors - 1 | 0);
+  colors.forEach(function (hue, index) {
+        var offset = index * interval;
+        var match = Color.HSV.toHSL([
+              hue,
+              100,
+              hsv.v
+            ]);
+        var h$p = match[0].toString();
+        var s$p = match[1].toString();
+        var l$p = match[2].toString();
+        var color = "hsl(" + h$p + " " + s$p + "% " + l$p + "%)";
+        conicGradient.addColorStop(offset, color);
+      });
+  circle(ctx, conicGradient);
+  var radialGradient = ctx.createRadialGradient(300, 300, 5, 300, 300, 300);
+  radialGradient.addColorStop(0.0, "white");
+  radialGradient.addColorStop(1.0, "rgba(255, 255, 255, 0");
+  circle(ctx, radialGradient);
+}
+
 function ColorWheel(props) {
   var canvasRef = Hooks.useRef(null);
   var match = State.getSelectedColor();
   var hsv = match.hsv;
   var logRef = function (hsv) {
     var canvas = canvasRef.current;
-    if (!(canvas === null || canvas === undefined)) {
-      var ctx = canvas.getContext("2d");
-      ctx.reset();
-      var conicGradient = ctx.createConicGradient(0, 300, 300);
-      var totalColors = colors.length;
-      var interval = 1.0 / (totalColors - 1 | 0);
-      colors.forEach(function (hue, index) {
-            var offset = index * interval;
-            var match = Color.HSV.toHSL([
-                  hue,
-                  100,
-                  hsv.v
-                ]);
-            var h$p = match[0].toString();
-            var s$p = match[1].toString();
-            var l$p = match[2].toString();
-            var color = "hsl(" + h$p + " " + s$p + "% " + l$p + "%)";
-            conicGradient.addColorStop(offset, color);
-          });
-      circle(ctx, conicGradient);
-      var radialGradient = ctx.createRadialGradient(300, 300, 5, 300, 300, 300);
-      radialGradient.addColorStop(0.0, "white");
-      radialGradient.addColorStop(1.0, "rgba(255, 255, 255, 0");
-      return circle(ctx, radialGradient);
-    }
-    if (canvas === null) {
+    if (canvas === null || canvas === undefined) {
+      if (canvas === null) {
+        console.log("canvas is not set yet");
+        return ;
+      }
       console.log("canvas is not set yet");
       return ;
+    } else {
+      drawColorWheel(canvas, hsv);
+      State.canvasSignal.value = Caml_option.some(canvas);
+      return ;
     }
-    console.log("canvas is not set yet");
   };
   Hooks.useEffect((function () {
           logRef(hsv);

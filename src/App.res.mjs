@@ -5,6 +5,7 @@ import * as ColorWheel from "./ColorWheel.res.mjs";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as ColorHandles from "./ColorHandles.res.mjs";
 import * as Core__Option from "@rescript/core/src/Core__Option.res.mjs";
+import * as SidebarSlider from "./SidebarSlider.res.mjs";
 import * as BrightnessSlider from "./BrightnessSlider.res.mjs";
 import * as JsxRuntime from "preact/jsx-runtime";
 
@@ -89,143 +90,89 @@ function App(props) {
                         JsxRuntime.jsx("section", {
                               children: JsxRuntime.jsxs("form", {
                                     children: [
-                                      JsxRuntime.jsxs("div", {
-                                            children: [
-                                              JsxRuntime.jsx("label", {
-                                                    children: "Red",
-                                                    className: "w-20",
-                                                    htmlFor: "id_props_red"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-10 bg-gray-800 text-right px-2",
-                                                    id: "id_props_red",
-                                                    type: "text",
-                                                    value: "50"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-full",
-                                                    max: "255",
-                                                    min: "0",
-                                                    type: "range",
-                                                    value: "50"
-                                                  })
-                                            ],
-                                            className: "flex flex-row gap-2"
+                                      JsxRuntime.jsx(SidebarSlider.make, {
+                                            label: "Red",
+                                            id: "red",
+                                            set: (function (v) {
+                                                return {
+                                                        TAG: "R",
+                                                        _0: v
+                                                      };
+                                              }),
+                                            get: (function (param) {
+                                                return param.rgb.r;
+                                              }),
+                                            max: "255"
                                           }),
-                                      JsxRuntime.jsxs("div", {
-                                            children: [
-                                              JsxRuntime.jsx("label", {
-                                                    children: "Green",
-                                                    className: "w-20",
-                                                    htmlFor: "id_props_green"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-10 bg-gray-800 text-right px-2",
-                                                    id: "id_props_green",
-                                                    type: "text",
-                                                    value: "50"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-full",
-                                                    max: "255",
-                                                    min: "0",
-                                                    type: "range",
-                                                    value: "50"
-                                                  })
-                                            ],
-                                            className: "flex flex-row gap-2"
+                                      JsxRuntime.jsx(SidebarSlider.make, {
+                                            label: "Green",
+                                            id: "green",
+                                            set: (function (v) {
+                                                return {
+                                                        TAG: "G",
+                                                        _0: v
+                                                      };
+                                              }),
+                                            get: (function (param) {
+                                                return param.rgb.g;
+                                              }),
+                                            max: "255"
                                           }),
-                                      JsxRuntime.jsxs("div", {
-                                            children: [
-                                              JsxRuntime.jsx("label", {
-                                                    children: "Blue",
-                                                    className: "w-20",
-                                                    htmlFor: "id_props_blue"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-10 bg-gray-800 text-right px-2",
-                                                    id: "id_props_blue",
-                                                    type: "text",
-                                                    value: "50"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-full",
-                                                    max: "255",
-                                                    min: "0",
-                                                    type: "range",
-                                                    value: "50"
-                                                  })
-                                            ],
-                                            className: "flex flex-row gap-2 mb-4"
+                                      JsxRuntime.jsx(SidebarSlider.make, {
+                                            label: "Blue",
+                                            id: "blue",
+                                            set: (function (v) {
+                                                return {
+                                                        TAG: "B",
+                                                        _0: v
+                                                      };
+                                              }),
+                                            get: (function (param) {
+                                                return param.rgb.b;
+                                              }),
+                                            className: "mb-4",
+                                            max: "255"
                                           }),
-                                      JsxRuntime.jsxs("div", {
-                                            children: [
-                                              JsxRuntime.jsx("label", {
-                                                    children: "Hue",
-                                                    className: "w-20",
-                                                    htmlFor: "id_props_hue"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-10 bg-gray-800 text-right px-2",
-                                                    id: "id_props_hue",
-                                                    type: "text",
-                                                    value: "50"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-full",
-                                                    max: "360",
-                                                    min: "0",
-                                                    type: "range",
-                                                    value: "50"
-                                                  })
-                                            ],
-                                            className: "flex flex-row gap-2"
+                                      JsxRuntime.jsx(SidebarSlider.make, {
+                                            label: "Hue",
+                                            id: "hue",
+                                            set: (function (v) {
+                                                return {
+                                                        TAG: "H",
+                                                        _0: v
+                                                      };
+                                              }),
+                                            get: (function (param) {
+                                                return param.hsv.h;
+                                              }),
+                                            max: "360"
                                           }),
-                                      JsxRuntime.jsxs("div", {
-                                            children: [
-                                              JsxRuntime.jsx("label", {
-                                                    children: "Sat",
-                                                    className: "w-20",
-                                                    htmlFor: "id_props_saturation"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-10 bg-gray-800 text-right px-2",
-                                                    id: "id_props_saturation",
-                                                    type: "text",
-                                                    value: "50"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-full",
-                                                    max: "100",
-                                                    min: "0",
-                                                    type: "range",
-                                                    value: "50"
-                                                  })
-                                            ],
-                                            className: "flex flex-row gap-2"
+                                      JsxRuntime.jsx(SidebarSlider.make, {
+                                            label: "Sat",
+                                            id: "sat",
+                                            set: (function (v) {
+                                                return {
+                                                        TAG: "S",
+                                                        _0: v
+                                                      };
+                                              }),
+                                            get: (function (param) {
+                                                return param.hsv.s;
+                                              })
                                           }),
-                                      JsxRuntime.jsxs("div", {
-                                            children: [
-                                              JsxRuntime.jsx("label", {
-                                                    children: "Light",
-                                                    className: "w-20",
-                                                    htmlFor: "id_props_brightness"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-10 bg-gray-800 text-right px-2",
-                                                    id: "id_props_brightness",
-                                                    type: "text",
-                                                    value: "50"
-                                                  }),
-                                              JsxRuntime.jsx("input", {
-                                                    className: "w-full",
-                                                    max: "100",
-                                                    min: "0",
-                                                    type: "range",
-                                                    value: "50"
-                                                  })
-                                            ],
-                                            className: "flex flex-row gap-2 mb-4"
+                                      JsxRuntime.jsx(SidebarSlider.make, {
+                                            label: "Value",
+                                            id: "val",
+                                            set: (function (v) {
+                                                return {
+                                                        TAG: "V",
+                                                        _0: v
+                                                      };
+                                              }),
+                                            get: (function (param) {
+                                                return param.hsv.v;
+                                              }),
+                                            className: "mb-4"
                                           }),
                                       JsxRuntime.jsxs("div", {
                                             children: [

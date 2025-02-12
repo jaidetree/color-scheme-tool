@@ -53,7 +53,10 @@ let make = () => {
 
   let logRef = (hsv: State.hsv) => {
     switch canvasRef.current {
-    | Value(canvas) => canvas->drawColorWheel(hsv)
+    | Value(canvas) => {
+        canvas->drawColorWheel(hsv)
+        canvasSignal->Signal.set(Some(canvas))
+      }
     | Null | Undefined => Js.Console.log("canvas is not set yet")
     }
   }

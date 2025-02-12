@@ -13,11 +13,7 @@ var dragFsmSignal = Signals.signal({
         effect: undefined
       },
       next: {
-        state: {
-          TAG: "Idle",
-          _0: 632,
-          _1: 332
-        },
+        state: "Init",
         effect: undefined
       }
     });
@@ -27,44 +23,25 @@ function dispatch(action) {
   var prev = match.next;
   var match$1 = prev.state;
   var next;
+  var exit = 0;
+  var e;
   if (typeof match$1 !== "object") {
-    next = prev;
+    switch (action.TAG) {
+      case "MouseDown" :
+          e = action._0;
+          exit = 1;
+          break;
+      case "MouseMove" :
+      case "MouseUp" :
+          next = prev;
+          break;
+      
+    }
   } else if (match$1.TAG === "Idle") {
     switch (action.TAG) {
       case "MouseDown" :
-          var e = action._0;
-          var x = e.pageX;
-          var y = e.pageY;
-          var createListeners = function (dispatch) {
-            var onMouseMove = function ($$event) {
-              dispatch({
-                    TAG: "MouseMove",
-                    _0: $$event
-                  });
-            };
-            var onMouseUp = function ($$event) {
-              dispatch({
-                    TAG: "MouseUp",
-                    _0: $$event
-                  });
-            };
-            window.addEventListener("mousemove", onMouseMove);
-            window.addEventListener("mouseup", onMouseUp, {
-                  once: true
-                });
-            return (function () {
-                      window.removeEventListener("mousemove", onMouseMove);
-                      window.removeEventListener("mouseup", onMouseUp);
-                    });
-          };
-          next = {
-            state: {
-              TAG: "Dragging",
-              _0: x,
-              _1: y
-            },
-            effect: createListeners
-          };
+          e = action._0;
+          exit = 1;
           break;
       case "MouseMove" :
       case "MouseUp" :
@@ -79,32 +56,66 @@ function dispatch(action) {
           break;
       case "MouseMove" :
           var e$1 = action._0;
-          var x$1 = e$1.pageX;
-          var y$1 = e$1.pageY;
+          var x = e$1.pageX;
+          var y = e$1.pageY;
           next = {
             state: {
               TAG: "Dragging",
-              _0: x$1,
-              _1: y$1
+              _0: x,
+              _1: y
             },
             effect: prev.effect
           };
           break;
       case "MouseUp" :
           var e$2 = action._0;
-          var x$2 = e$2.pageX;
-          var y$2 = e$2.pageY;
+          var x$1 = e$2.pageX;
+          var y$1 = e$2.pageY;
           next = {
             state: {
               TAG: "Idle",
-              _0: x$2,
-              _1: y$2
+              _0: x$1,
+              _1: y$1
             },
             effect: undefined
           };
           break;
       
     }
+  }
+  if (exit === 1) {
+    var x$2 = e.pageX;
+    var y$2 = e.pageY;
+    var createListeners = function (dispatch) {
+      var onMouseMove = function ($$event) {
+        dispatch({
+              TAG: "MouseMove",
+              _0: $$event
+            });
+      };
+      var onMouseUp = function ($$event) {
+        dispatch({
+              TAG: "MouseUp",
+              _0: $$event
+            });
+      };
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp, {
+            once: true
+          });
+      return (function () {
+                window.removeEventListener("mousemove", onMouseMove);
+                window.removeEventListener("mouseup", onMouseUp);
+              });
+    };
+    next = {
+      state: {
+        TAG: "Dragging",
+        _0: x$2,
+        _1: y$2
+      },
+      effect: createListeners
+    };
   }
   dragFsmSignal.value = {
     prev: prev,
@@ -135,7 +146,7 @@ Signals.effect(function () {
       cleanupEffectRef.contents = cleanup;
     });
 
-function calcTriangle(pageX, pageY) {
+function fromPos(pageX, pageY) {
   var element = document.getElementById("color-wheel");
   if (element == null) {
     return {
@@ -145,7 +156,6 @@ function calcTriangle(pageX, pageY) {
             hyp: 300.0
           };
   }
-  console.log("canvas", element);
   var rect = element.getBoundingClientRect();
   var scrollX = window.scrollX;
   var scrollY = window.scrollY;
@@ -174,33 +184,7 @@ function calcTriangle(pageX, pageY) {
         };
 }
 
-var triangleSignal = Signals.computed(function () {
-      var match = dragFsmSignal.value;
-      var state = match.next.state;
-      var match$1;
-      match$1 = typeof state !== "object" ? [
-          332,
-          332
-        ] : [
-          state._0,
-          state._1
-        ];
-      return calcTriangle(match$1[0], match$1[1]);
-    });
-
-function constrainCursor(param) {
-  return {
-          x: (param.x | 0) + 32 | 0,
-          y: (param.y | 0) + 32 | 0
-        };
-}
-
-var handleSignal = Signals.computed(function () {
-      var triangle = triangleSignal.value;
-      return constrainCursor(triangle);
-    });
-
-function triangleToColor(param) {
+function toColor(param) {
   var h = 360.0 - param.angle | 0;
   var s = Core__Float.clamp(0.0, 300.0, param.hyp) / 300.0 * 100.0 | 0;
   return [
@@ -209,14 +193,85 @@ function triangleToColor(param) {
         ];
 }
 
+function fromHS(h, s) {
+  var theta = Math.PI * (h - 360.0) / 180.0;
+  var hyp = s / 100.0 * 300.0;
+  var x = hyp * Math.cos(theta);
+  var y = hyp * Math.sin(theta);
+  return {
+          angle: h + 360.0,
+          x: x,
+          y: y,
+          hyp: hyp
+        };
+}
+
+function translateToWheel(param) {
+  var hyp = param.hyp;
+  var y = param.y;
+  var x = param.x;
+  var angle = param.angle;
+  return Core__Option.map(State.canvasSignal.value, (function (canvas) {
+                var rect = canvas.getBoundingClientRect();
+                var offsetX = rect.width / 2.0;
+                var offsetY = rect.height / 2.0;
+                var x$1 = x + offsetX;
+                var y$1 = offsetY - y;
+                return {
+                        angle: angle,
+                        x: x$1,
+                        y: y$1,
+                        hyp: hyp
+                      };
+              }));
+}
+
+var Triangle = {
+  fromPos: fromPos,
+  toColor: toColor,
+  fromHS: fromHS,
+  translateToWheel: translateToWheel
+};
+
+var handleSignal = Signals.signal({
+      x: 0,
+      y: 0
+    });
+
+function moveCursor(param) {
+  handleSignal.value = {
+    x: (param.x | 0) + 32 | 0,
+    y: (param.y | 0) + 32 | 0
+  };
+}
+
 Signals.effect(function () {
-      var triangle = triangleSignal.value;
-      var match = triangleToColor(triangle);
-      State.setSelectedColor({
-            TAG: "HS",
-            _0: match[0],
-            _1: match[1]
-          });
+      var match = dragFsmSignal.value;
+      var state = match.next.state;
+      var exit = 0;
+      if (typeof state === "object") {
+        exit = 1;
+      }
+      if (exit === 1) {
+        var triangle = fromPos(state._0, state._1);
+        moveCursor(triangle);
+        var match$1 = toColor(triangle);
+        State.setSelectedColor({
+              TAG: "HS",
+              _0: match$1[0],
+              _1: match$1[1]
+            });
+      }
+      
+    });
+
+Signals.effect(function () {
+      var action = State.Actions.signal.value;
+      if (action.TAG !== "Wheel") {
+        var hsv = action._0.hsv;
+        Core__Option.forEach(translateToWheel(fromHS(hsv.h, hsv.s)), moveCursor);
+      }
+      
     });
 
 function ColorHandles(props) {
@@ -274,11 +329,9 @@ export {
   dragFsmSignal ,
   dispatch ,
   cleanupEffectRef ,
-  calcTriangle ,
-  triangleSignal ,
-  constrainCursor ,
+  Triangle ,
   handleSignal ,
-  triangleToColor ,
+  moveCursor ,
   make ,
 }
 /* dragFsmSignal Not a pure module */

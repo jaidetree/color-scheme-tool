@@ -142,12 +142,6 @@ function peekSelectedColor() {
   return selectedColorSignal.peek();
 }
 
-var colorActionSignal = Signals.signal("None");
-
-function setSelectedColor(colorAction) {
-  colorActionSignal.value = colorAction;
-}
-
 function updateSelectedColor(color) {
   var state = stateSignal.peek();
   var updatedColors = state.colors.toSpliced(state.selectedColor, 1, color);
@@ -157,88 +151,122 @@ function updateSelectedColor(color) {
   };
 }
 
-Signals.effect(function () {
-      var action = colorActionSignal.value;
-      var match = selectedColorSignal.peek();
-      var hsv = match.hsv;
-      var rgb = match.rgb;
-      var color;
-      if (typeof action !== "object") {
-        color = {
+var color = selectedColorSignal.value;
+
+var signal = Signals.signal({
+      TAG: "InitHSV",
+      _0: color
+    });
+
+var Actions = {
+  updateSelectedColor: updateSelectedColor,
+  signal: signal
+};
+
+function setSelectedColor(input) {
+  var match = selectedColorSignal.peek();
+  var hsv = match.hsv;
+  var rgb = match.rgb;
+  var tmp;
+  switch (input.TAG) {
+    case "R" :
+        tmp = {
+          TAG: "RGB",
+          _0: input._0,
+          _1: rgb.g,
+          _2: rgb.b
+        };
+        break;
+    case "G" :
+        tmp = {
+          TAG: "RGB",
+          _0: rgb.r,
+          _1: input._0,
+          _2: rgb.b
+        };
+        break;
+    case "B" :
+        tmp = {
+          TAG: "RGB",
+          _0: rgb.r,
+          _1: rgb.g,
+          _2: input._0
+        };
+        break;
+    case "H" :
+        tmp = {
           TAG: "HSV",
-          _0: hsv.h,
+          _0: input._0,
           _1: hsv.s,
           _2: hsv.v
         };
-      } else {
-        switch (action.TAG) {
-          case "R" :
-              color = {
-                TAG: "RGB",
-                _0: action._0,
-                _1: rgb.g,
-                _2: rgb.b
-              };
-              break;
-          case "G" :
-              color = {
-                TAG: "RGB",
-                _0: rgb.r,
-                _1: action._0,
-                _2: rgb.b
-              };
-              break;
-          case "B" :
-              color = {
-                TAG: "RGB",
-                _0: rgb.r,
-                _1: rgb.g,
-                _2: action._0
-              };
-              break;
-          case "H" :
-              color = {
-                TAG: "HSV",
-                _0: action._0,
-                _1: hsv.s,
-                _2: hsv.v
-              };
-              break;
-          case "S" :
-              color = {
-                TAG: "HSV",
-                _0: hsv.h,
-                _1: action._0,
-                _2: hsv.v
-              };
-              break;
-          case "V" :
-              color = {
-                TAG: "HSV",
-                _0: hsv.h,
-                _1: hsv.s,
-                _2: action._0
-              };
-              break;
-          case "Hex" :
-              color = {
-                TAG: "Hex",
-                _0: action._0
-              };
-              break;
-          case "HS" :
-              color = {
-                TAG: "HSV",
-                _0: action._0,
-                _1: action._1,
-                _2: hsv.v
-              };
-              break;
-          
-        }
-      }
-      updateSelectedColor(color);
-    });
+        break;
+    case "S" :
+        tmp = {
+          TAG: "HSV",
+          _0: hsv.h,
+          _1: input._0,
+          _2: hsv.v
+        };
+        break;
+    case "V" :
+        tmp = {
+          TAG: "HSV",
+          _0: hsv.h,
+          _1: hsv.s,
+          _2: input._0
+        };
+        break;
+    case "Hex" :
+        tmp = {
+          TAG: "Hex",
+          _0: input._0
+        };
+        break;
+    case "HS" :
+        tmp = {
+          TAG: "HSV",
+          _0: input._0,
+          _1: input._1,
+          _2: hsv.v
+        };
+        break;
+    
+  }
+  updateSelectedColor(tmp);
+  var color = selectedColorSignal.peek();
+  var tmp$1;
+  switch (input.TAG) {
+    case "H" :
+    case "S" :
+    case "V" :
+        tmp$1 = {
+          TAG: "HSV",
+          _0: color
+        };
+        break;
+    case "Hex" :
+        tmp$1 = {
+          TAG: "Hex",
+          _0: color
+        };
+        break;
+    case "HS" :
+        tmp$1 = {
+          TAG: "Wheel",
+          _0: color
+        };
+        break;
+    default:
+      tmp$1 = {
+        TAG: "RGB",
+        _0: color
+      };
+  }
+  signal.value = tmp$1;
+}
+
+var canvasSignal = Signals.signal(undefined);
 
 export {
   stateSignal ,
@@ -247,8 +275,8 @@ export {
   selectedColorSignal ,
   getSelectedColor ,
   peekSelectedColor ,
-  colorActionSignal ,
+  Actions ,
   setSelectedColor ,
-  updateSelectedColor ,
+  canvasSignal ,
 }
 /* stateSignal Not a pure module */

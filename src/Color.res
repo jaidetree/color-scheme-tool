@@ -181,6 +181,12 @@ module RGB = {
       ->Math.round
       ->Float.toInt
 
+    let h = if h < 0 {
+      h + 360
+    } else {
+      h
+    }
+
     let s =
       if cmax == 0.0 {
         0.0

@@ -196,10 +196,11 @@ function toHSV$1(param) {
               cmax === b$p ? ((r$p - g$p) / delta + 4.0) * 60.0 : 0.0
             )
         )) | 0;
+  var h$1 = h < 0 ? h + 360 | 0 : h;
   var s = Math.round(cmax === 0.0 ? 0.0 : delta / cmax * 100.0) | 0;
   var v = Math.round(cmax * 100.0) | 0;
   return [
-          h,
+          h$1,
           s,
           v
         ];
